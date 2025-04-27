@@ -1,0 +1,357 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+.Auth_container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Auth_logo {
+  background-image: url("./img/logocover.png");
+  width: 130px;
+  height: 45px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  object-fit: cover;
+  margin-right: auto;
+}
+.new_content{
+  padding: 0 80px;
+}
+.Auth_innerContainer {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  justify-content: space-between;
+  width: 100%;
+  height: 100vh;
+  animation: fadeIn 0.5s ease-in-out;
+}
+.Auth_innerContainer_reg {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  justify-content: space-between;
+  width: 1000px;
+  animation: fadeIn 0.5s ease-in-out;
+  margin: 50px 0;
+}
+.Auth_content {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 30px;
+  flex-direction: column;
+}
+.Auth_content_reg {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+  flex-direction: column;
+}
+.Auth_heading {
+  width: 100%;
+  font-weight: 600;
+  font-size: 30px;
+}
+.Auth_signupPrompt {
+  text-align: end;
+}
+.Auth_subheading,
+.Auth_signupPrompt {
+  font-weight: 400;
+  font-size: 15px;
+  color: #5d5d5d;
+}
+.Auth_content_img {
+  background-image: url("./img/log.jpeg");
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 100vh;
+}
+.Auth_content_img_reg {
+  background-image: url("./img/reg.jpeg");
+  background-size: cover;
+  background-position: center;
+  width: 95%;
+  height: 100vh;
+}
+
+.Auth_form {
+  width: 100%;
+}
+
+.Auth_formGroup {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.Auth_label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.Auth_input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cacaca;
+  border-radius: 4px;
+  outline: none;
+  font-size: 16px;
+}
+.skil_addbtn {
+  display: flex;
+  width: 100%;
+  gap: 18px;
+}
+.Auth_button {
+  width: 100%;
+  padding: 10px;
+  background-color: #004c5d;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.selectedimagepreview{
+  width: 150px;
+  height: 150px;
+}
+.profile-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  margin: 0 auto;
+}
+.newscrol_from {
+  max-height: 400px; 
+  overflow-y: auto;
+  padding-right: 10px;
+  padding-bottom: 35px;
+  scrollbar-width: thin; 
+  scrollbar-color: #888 #f1f1f1; 
+}
+
+.newscrol_from::-webkit-scrollbar {
+  width: 8px;
+}
+
+.newscrol_from::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.newscrol_from::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+.newscrol_from::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.profileicon {
+  font-size: 150px;
+  color: #b0b0b0;
+}
+
+.from_input_con{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 15px;
+}
+.Auth_button:hover {
+  transform: translateY(-2px);
+  background-color: #ff715b;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.Auth_signupPrompt {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.Auth_signupLink {
+  color: black;
+  font-weight: 600;
+  cursor: pointer;
+}
+.add_s_btn {
+  padding: 10px;
+  background-color: #004c5d;
+  border: none;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 16px;
+  font-size: 43px;
+  cursor: pointer;
+}
+.searchinput{
+  width: 670px;
+  margin-bottom: 25px;
+}
+.Auth_googleButton {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #ffffff;
+  border: 1px solid #474545;
+  border-radius: 80px;
+  color: #474545;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.skil_dis_con{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-start;
+  margin-bottom: 5px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.skil_name{
+  font-size: 13px;
+  font-weight: 500;
+  font-style: italic;
+  color: gray;
+}
+.remve_skil{
+  background-color: #004c5d;
+  color: #ffffff;
+  padding: 3px 10px;
+  border-radius: 18px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+.glogo {
+  width: 25px;
+}
+.Auth_googleButton:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.Auth_signupLink:hover {
+  color: #5d5d5d;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.verification-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.veryname{
+  font-size: 26px;
+  font-weight: 600;
+  color: #004c5d;
+  margin-bottom: 10px;
+}
+.modal-content {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 600px;
+}
+
+.verification-input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #cacaca;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.verification-button {
+  padding: 10px 20px;
+  background-color: #004c5d;
+  border: none;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.verification-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.newproinput {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.selected-image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-top: 10px;
+  border: 2px solid #cacaca;
+}
+
+.hidden-input {
+  display: none;
+}
+
