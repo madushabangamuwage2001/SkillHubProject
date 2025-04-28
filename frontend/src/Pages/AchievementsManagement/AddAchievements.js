@@ -153,7 +153,7 @@ function AddAchievements() {
                   required
                 />
               </div>
-              <button type="submit" className="Auth_button">ADD</button>
+              <button type="submit" className="Auth_button">Add</button>
             </form >
           </div >
         </div >
