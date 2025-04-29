@@ -16,9 +16,9 @@
   width: 100%;
 }
 .newpart_set_icon{
-  font-size: 25px;
+  font-size: 35px;
   cursor: pointer;
-  margin-left: 140px;
+  margin-left: 190px;
   color: #004c5d;
 }
 .newpart_set{
@@ -382,9 +382,13 @@
   align-items: center;
   gap: 10px;
   flex-direction: column;
-  width: 550px;
-  border: 1px solid #ccc;
-  padding: 25px;
+  width: 700px;
+  border: 2px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+  margin: 0 auto;
+  margin-top: 10px;
+  margin-bottom: 40px;
 }
 .from_data {
   width: 100%;
