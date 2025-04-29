@@ -71,9 +71,10 @@
   flex-direction: column;
 }
 .Auth_heading {
-  width: 100%;
+ 
   font-weight: 600;
   font-size: 30px;
+  margin:auto;
 }
 .Auth_signupPrompt {
   text-align: end;
