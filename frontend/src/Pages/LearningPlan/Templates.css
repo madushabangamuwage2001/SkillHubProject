@@ -12,6 +12,8 @@
   text-transform: capitalize;
   font-size: 20px;
   text-align: start;
+  font-weight: 500;
+  color: #004c5d;
 }
 .template_id_one{
   width: 100%;
@@ -122,6 +124,7 @@
   gap: 5px;
   font-weight: 500;
   font-size: 15px;
+  color: #676565;
 }
 .iframe_preview_dis{
   width: 100%;
