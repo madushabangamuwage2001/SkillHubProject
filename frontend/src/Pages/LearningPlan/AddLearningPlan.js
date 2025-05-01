@@ -312,6 +312,7 @@ function AddLearningPlan() {
                   <option value="Programming">Programming</option>
                   <option value="Cooking">Cooking</option>
                   <option value="Photography">Photography</option>
+                  <option value="Photography">Other</option>
                 </select>
               </div>
               <hr ></hr>
