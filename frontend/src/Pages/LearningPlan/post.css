@@ -1,7 +1,8 @@
 .continer {
   width: 1440px;
   margin: 0 auto;
-  background-color: #0b2a47;
+  background-color: #d0d6f1;
+  color: #ffffff;
 }
 .continSection {
   width: 100%;
@@ -13,16 +14,16 @@
   padding-bottom: 50px;
   padding-top: 100px;
 }
-.image_card{
+.image_card {
   width: 100%;
 }
-.newpart_set_icon{
+.newpart_set_icon {
   font-size: 35px;
   cursor: pointer;
   margin-left: 190px;
   color: #004c5d;
 }
-.newpart_set{
+.newpart_set {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -74,7 +75,7 @@
 }
 .post_card {
   width: 670px;
-  border: 1px solid #004c5d;
+  border: 1px solid #333333;
   border-radius: 5px;
   justify-content: center;
   padding: 20px;
@@ -82,7 +83,10 @@
   flex-direction: column;
   align-items: flex-start;
   display: flex;
+
+  background-color: white;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
 }
 .post_card_new {
   width: 700px;
@@ -184,7 +188,7 @@
   font-weight: 500;
   color: #676565;
 }
-.image-preview-achi{
+.image-preview-achi {
   width: 100%;
   height: auto;
   margin-top: 5px;
@@ -204,7 +208,6 @@
   gap: 3px;
   justify-content: space-between;
 }
-
 .action_btn_icon {
   color: #676565;
   cursor: pointer;
@@ -267,7 +270,6 @@
 }
 .unlikebtn {
   color: #004c5d;
-
   cursor: pointer;
   font-weight: 600;
   font-size: 30px;
@@ -285,13 +287,12 @@
 .comnt_card {
   border-radius: 5px;
   padding: 5px 10px 10px 10px;
-
   display: flex;
   align-items: flex-start;
   gap: 0px;
   justify-content: center;
   flex-direction: column;
-  background-color: #f5f5f5;
+  background-color: #2a2a2a;
 }
 .comnt_card_username {
   font-weight: 500;
@@ -309,7 +310,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  justify-content:  flex-start;
+  justify-content: flex-start;
   margin-bottom: 20px;
 }
 .coment_action_btn {
@@ -338,7 +339,7 @@
 .add_coment_btn:hover {
   color: black;
 }
-.withsett{
+.withsett {
   width: 100%;
 }
 .add_comennt_con {
@@ -374,7 +375,6 @@
   font-size: 14px;
   font-weight: 600;
 }
-
 .view_all_comments_btn:hover {
   font-weight: 800;
 }
@@ -390,11 +390,11 @@
   margin: 0 auto;
   margin-top: 10px;
   margin-bottom: 40px;
+  background-color: white;
 }
 .from_data {
   width: 100%;
 }
-
 textarea {
   resize: none;
 }
@@ -404,30 +404,34 @@ textarea {
   width: 100%;
   gap: 8px;
 }
-
 .media-collage {
  display: flex;
   grid-template-columns: repeat(2, 1fr);
   gap: 5px;
   width: 100%;
+  
 }
-
 .media-item {
   padding: 2rem;
   position: relative;
   overflow: hidden;
+  border-radius: 5px;
+  margin: auto;
+
+
 
 
 }
-
 .media-item img,
 .media-item video {
  border-radius: 10px;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  margin: auto;
+  border-radius: 20px;
+  padding: 1rem;
 }
-
 .media-overlay {
   position: relative;
   background-color: rgba(0, 0, 0, 0.5);
@@ -438,14 +442,12 @@ textarea {
   font-size: 24px;
   font-weight: bold;
 }
-
 .overlay-text {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
-
 .media-modal-overlay {
   background-color: rgba(0, 0, 0, 0.8);
   position: fixed;
@@ -458,7 +460,6 @@ textarea {
   justify-content: center;
   z-index: 1000;
 }
-
 .media-modal {
   background: white;
   border-radius: 10px;
@@ -471,13 +472,11 @@ textarea {
   align-items: center;
   justify-content: center;
 }
-
 .modal-media {
   max-width: 100%;
   max-height: 80vh;
   object-fit: contain;
 }
-
 .close-modal-btn {
   position: absolute;
   top: 10px;
@@ -490,7 +489,6 @@ textarea {
   cursor: pointer;
   font-size: 14px;
 }
-
 .close-modal-btn:hover {
   background: #084a7a;
 }
@@ -509,6 +507,8 @@ textarea {
 .topic_cont {
   text-transform: capitalize;
   font-size: 18px;
+  font-weight: 600;
+  color: #004c5d;
 }
 .topic_cont_b {
   font-weight: 500;
