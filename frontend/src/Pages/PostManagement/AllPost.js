@@ -350,6 +350,7 @@ function AllPost() {
                     )}
                   </div>
                   <div className='user_details_card_di'>
+                    <h1>Nilaalalal</h1>
                     <p className='card_post_title'>{post.title}</p>
                     <p className='card_post_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
                     <p className='card_post_category'>Category: {post.category || 'Uncategorized'}</p>
