@@ -75,6 +75,7 @@
   font-weight: 600;
   font-size: 30px;
   margin:auto;
+  color: #0e0d0d;
 }
 .Auth_signupPrompt {
   text-align: end;
@@ -86,7 +87,7 @@
   color: #5d5d5d;
 }
 .Auth_content_img {
-  background-image: url("./img/log.jpeg");
+  background-image: url("");
   background-size: cover;
   background-position: center;
   width: 100%;
