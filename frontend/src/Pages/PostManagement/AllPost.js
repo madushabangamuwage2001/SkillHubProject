@@ -551,6 +551,7 @@ function AllPost() {
             )}
           </div>
         </div>
+  
       </div>
 
       {/* Modal for displaying full media */}
