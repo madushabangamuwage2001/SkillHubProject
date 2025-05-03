@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { IoMdAdd } from "react-icons/io";
 import NavBar from '../../Components/NavBar/NavBar';
+import VoiceInput from '../../Components/VoiceInput/VoiceInput';
+
 function UpdateUserProfile() {
   const { id } = useParams();
   const [formData, setFormData] = useState({
@@ -16,18 +18,37 @@ function UpdateUserProfile() {
   const [previewImage, setPreviewImage] = useState(null); // State for previewing the selected image
   const navigate = useNavigate();
   const [skillInput, setSkillInput] = useState('');
+  const [isListening, setIsListening] = useState({
+    fullname: false,
+    bio: false
+  });
+  const [interimText, setInterimText] = useState({
+    fullname: '',
+    bio: ''
+  });
+  const [transcribedText, setTranscribedText] = useState({
+    fullname: '',
+    bio: ''
+  });
+  const [voiceHistory, setVoiceHistory] = useState({
+    fullname: [],
+    bio: []
+  });
+
   const handleAddSkill = () => {
     if (skillInput.trim()) {
       setFormData({ ...formData, skills: [...formData.skills, skillInput] });
       setSkillInput('');
     }
   };
+
   const handleRemoveSkill = (skillToRemove) => {
     setFormData({
       ...formData,
       skills: formData.skills.filter((skill) => skill !== skillToRemove),
     });
   };
+
   useEffect(() => {
     fetch(`http://localhost:8080/user/${id}`)
       .then((response) => {
@@ -53,6 +74,36 @@ function UpdateUserProfile() {
       reader.onload = () => setPreviewImage(reader.result);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleVoiceInput = (field, text, isFinal) => {
+    if (isFinal) {
+      const finalText = text.trim();
+      setTranscribedText(prev => ({ ...prev, [field]: finalText }));
+      setVoiceHistory(prev => ({
+        ...prev,
+        [field]: [...prev[field], finalText]
+      }));
+      
+      setFormData(prev => ({
+        ...prev,
+        [field]: prev[field] ? `${prev[field]} ${finalText}` : finalText
+      }));
+    } else {
+      setInterimText(prev => ({ ...prev, [field]: text }));
+    }
+  };
+
+  const startVoiceInput = (field) => {
+    setIsListening(prev => ({ ...prev, [field]: true }));
+    setInterimText(prev => ({ ...prev, [field]: '' }));
+  };
+
+  const stopVoiceInput = (field) => {
+    setIsListening(prev => ({ ...prev, [field]: false }));
+    setTimeout(() => {
+      setTranscribedText(prev => ({ ...prev, [field]: '' }));
+    }, 3000);
   };
 
   const handleSubmit = async (e) => {
@@ -92,15 +143,39 @@ function UpdateUserProfile() {
             <form onSubmit={handleSubmit} className="Auth_form">
               <div className="Auth_formGroup">
                 <label className="Auth_label">Full Name</label>
-                <input
-                  className="Auth_input"
-                  type="text"
-                  name="fullname"
-                  placeholder="Full Name"
-                  value={formData.fullname}
-                  onChange={handleInputChange}
-                  required
-                />
+                <div className="input-with-voice">
+                  <input
+                    className={`Auth_input ${isListening.fullname ? 'listening' : ''}`}
+                    type="text"
+                    name="fullname"
+                    placeholder={isListening.fullname ? 'Listening...' : 'Full Name'}
+                    value={isListening.fullname ? `${formData.fullname} ${interimText.fullname}` : formData.fullname}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <VoiceInput 
+                    onTextUpdate={handleVoiceInput} 
+                    fieldName="fullname"
+                    isListening={isListening.fullname}
+                    onStartListening={() => startVoiceInput('fullname')}
+                    onStopListening={() => stopVoiceInput('fullname')}
+                  />
+                  {(transcribedText.fullname || interimText.fullname) && (
+                    <div className={`transcribed-text ${isListening.fullname ? 'listening' : 'completed'}`}>
+                      {isListening.fullname ? 
+                        `Recording: ${interimText.fullname}` : 
+                        `Latest: ${transcribedText.fullname}`}
+                    </div>
+                  )}
+                  {voiceHistory.fullname.length > 0 && (
+                    <div className="voice-history">
+                      <p className="voice-history-title">Voice Input History:</p>
+                      {voiceHistory.fullname.map((text, index) => (
+                        <div key={index} className="voice-history-item">{text}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Email Address</label>
@@ -174,14 +249,38 @@ function UpdateUserProfile() {
               </div>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Bio</label>
-                <textarea
-                  className="Auth_input"
-                  name="bio"
-                  placeholder="Bio"
-                  value={formData.bio}
-                  onChange={handleInputChange}
-                  rows={3}
-                />
+                <div className="input-with-voice">
+                  <textarea
+                    className={`Auth_input ${isListening.bio ? 'listening' : ''}`}
+                    name="bio"
+                    placeholder={isListening.bio ? 'Listening...' : 'Bio'}
+                    value={isListening.bio ? `${formData.bio} ${interimText.bio}` : formData.bio}
+                    onChange={handleInputChange}
+                    rows={3}
+                  />
+                  <VoiceInput 
+                    onTextUpdate={handleVoiceInput} 
+                    fieldName="bio"
+                    isListening={isListening.bio}
+                    onStartListening={() => startVoiceInput('bio')}
+                    onStopListening={() => stopVoiceInput('bio')}
+                  />
+                  {(transcribedText.bio || interimText.bio) && (
+                    <div className={`transcribed-text ${isListening.bio ? 'listening' : 'completed'}`}>
+                      {isListening.bio ? 
+                        `Recording: ${interimText.bio}` : 
+                        `Latest: ${transcribedText.bio}`}
+                    </div>
+                  )}
+                  {voiceHistory.bio.length > 0 && (
+                    <div className="voice-history">
+                      <p className="voice-history-title">Voice Input History:</p>
+                      {voiceHistory.bio.map((text, index) => (
+                        <div key={index} className="voice-history-item">{text}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Profile Picture</label>
