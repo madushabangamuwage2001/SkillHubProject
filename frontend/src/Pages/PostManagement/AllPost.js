@@ -415,6 +415,7 @@ function AllPost() {
                   
                   
                   <div className='user_details_card_di'>
+
                     
                     
                     <p className='card_post_title'>
@@ -425,6 +426,7 @@ function AllPost() {
                       {post.title}</p>
                     <p className='card_post_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
                     <p className='card_post_category' style={{color:'black'}}>Category: {post.category || 'Uncategorized'}</p>
+
                   </div>
                   <div className="media-collage">
                     {post.media.slice(0, 4).map((mediaUrl, index) => (

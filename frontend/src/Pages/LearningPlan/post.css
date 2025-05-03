@@ -103,10 +103,8 @@
   flex-direction: column;
   align-items: flex-start;
   display: flex;
-
   background-color: white;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-
+  box-shadow: 10px 10px 10px 10px rgba(195, 170, 170, 0.3);
 }
 .post_card_new {
   width: 700px;
@@ -425,8 +423,7 @@ textarea {
   gap: 8px;
 }
 .media-collage {
- display: flex;
-  grid-template-columns: repeat(2, 1fr);
+  /* grid-template-columns: repeat(2, 1fr); */
   gap: 5px;
   width: 100%;
   
@@ -437,10 +434,6 @@ textarea {
   overflow: hidden;
   border-radius: 5px;
   margin: auto;
-
-
-
-
 }
 .media-item img,
 .media-item video {
