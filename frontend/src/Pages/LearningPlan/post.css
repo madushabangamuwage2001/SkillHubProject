@@ -1,9 +1,28 @@
 .continer {
+  position: relative;
   width: 1440px;
   margin: 0 auto;
-  background-color: #d0d6f1;
   color: #ffffff;
+  z-index: 1;
+  overflow: hidden;
 }
+
+/* Blurred background layer */
+.continer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background-image: url("../../Components//NavBar/img/ai_image.png");  */
+  background-size: cover;
+  background-position: center;
+  filter: blur(8px); /* Adjust the blur amount as needed */
+  z-index: -1;
+}
+
+
 .continSection {
   width: 100%;
   display: flex;
@@ -76,8 +95,8 @@
 }
 .post_card {
   width: 670px;
-  border: 1px solid #333333;
-  border-radius: 5px;
+  
+  border-radius: 10px;
   justify-content: center;
   padding: 20px;
   gap: 15px;
@@ -153,7 +172,7 @@
   border: 0;
   cursor: pointer;
   outline: none;
-  color: #004c5d;
+  color: #3359ed;
   font-weight: 700;
   font-size: 17px;
 }
@@ -382,10 +401,10 @@
   align-items: center;
   gap: 10px;
   flex-direction: column;
-  width: 700px;
+  width: 600px;
   border: 2px solid #ccc;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 20px;
   margin: 0 auto;
   margin-top: 10px;
   margin-bottom: 40px;

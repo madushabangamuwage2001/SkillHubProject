@@ -13,6 +13,11 @@ import { GrUpdate } from "react-icons/gr";
 import { FiSave } from "react-icons/fi";
 import { TbPencilCancel } from "react-icons/tb";
 import { FaCommentAlt } from "react-icons/fa";
+import { FaUserGraduate } from "react-icons/fa";
+import Pro from '../../Components/NavBar/img/img.png';
+import { fetchUserDetails } from '../../Pages/UserManagement/UserProfile';
+
+
 Modal.setAppElement('#root');
 
 function AllPost() {
@@ -28,6 +33,10 @@ function AllPost() {
   const [searchQuery, setSearchQuery] = useState(''); // State for search query
   const navigate = useNavigate();
   const loggedInUserID = localStorage.getItem('userID'); // Get the logged-in user's ID
+  const userId = localStorage.getItem('userID');
+   const [userProfileImage, setUserProfileImage] = useState();
+ const [googleProfileImage, setGoogleProfileImage] = useState(null);
+    const [userType, setUserType] = useState(null);
 
   useEffect(() => {
     // Fetch all posts from the backend
@@ -71,6 +80,20 @@ function AllPost() {
 
     fetchPosts();
   }, []);
+  useEffect(() => {
+    const storedUserType = localStorage.getItem('userType');
+    setUserType(storedUserType);
+    if (storedUserType === 'google') {
+        const googleImage = localStorage.getItem('googleProfileImage');
+        setGoogleProfileImage(googleImage);
+    } else if (userId) {
+        fetchUserDetails(userId).then((data) => {
+            if (data && data.profilePicturePath) {
+                setUserProfileImage(`http://localhost:8080/uploads/profile/${data.profilePicturePath}`);
+            }
+        });
+    }
+}, [userId]);
 
   useEffect(() => {
     const fetchFollowedUsers = async () => {
@@ -273,6 +296,8 @@ function AllPost() {
       console.error('Error saving comment:', error);
     }
   };
+//post image devloped
+
 
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
@@ -325,8 +350,46 @@ function AllPost() {
             ) : (
               filteredPosts.map((post) => (
                 <div key={post.id} className='post_card'>
+                  
                   <div className='user_details_card'>
-                    <div className='name_section_post'>
+                    
+                    <div className='name_section_post' >
+                    {googleProfileImage ? (
+                            <img
+                                src={googleProfileImage}
+                                alt="Google Profile"
+                                className="nav_item_icon"
+                                style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = Pro;
+                                }}
+                                onClick={() => {
+                                    window.location.href = '/googalUserPro';
+                                }}
+                            />
+                        ) : userProfileImage ? (
+                            <img
+                                src={userProfileImage}
+                                alt="User Profile"
+                                className="nav_item_icon"
+                                style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = Pro;
+                                }}
+                                onClick={() => {
+                                    window.location.href = '/userProfile';
+                                }}
+                            />
+                        ) : (
+                            <FaUserGraduate
+                                className='nav_item_icon'
+                                onClick={() => {
+                                    window.location.href = '/userProfile';
+                                }}
+                            />
+                        )}
                       <p className='name_section_post_owner_name'>{postOwners[post.userID] || 'Anonymous'}</p>
                       {post.userID !== loggedInUserID && (
                         <button
@@ -349,11 +412,21 @@ function AllPost() {
                       </div>
                     )}
                   </div>
+                  
+                  
                   <div className='user_details_card_di'>
-                   
-                    <p className='card_post_title'>{post.title}</p>
+
+                    
+                    
+                    <p className='card_post_title'>
+                      
+                      
+                      
+                      
+                      {post.title}</p>
                     <p className='card_post_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-                    <p className='card_post_category' style={{color:"rgb(51, 51, 49)"}}>Category: {post.category || 'Uncategorized'}</p>
+                    <p className='card_post_category' style={{color:'black'}}>Category: {post.category || 'Uncategorized'}</p>
+
                   </div>
                   <div className="media-collage">
                     {post.media.slice(0, 4).map((mediaUrl, index) => (
@@ -480,6 +553,7 @@ function AllPost() {
             )}
           </div>
         </div>
+  
       </div>
 
       {/* Modal for displaying full media */}

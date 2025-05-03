@@ -75,10 +75,14 @@
   flex-direction: column;
 }
 .Auth_heading {
- 
+ align-items: center;
   font-weight: 600;
   font-size: 30px;
-  margin:auto;
+display: flex;
+justify-content: center;
+  color: #0e0d0d;
+  flex-direction: column;
+
 }
 .Auth_signupPrompt {
   text-align: end;
@@ -90,7 +94,7 @@
   color: #5d5d5d;
 }
 .Auth_content_img {
-  background-image: url("./img/log.jpeg");
+  background-image: url("../../Components/NavBar/img//login_img.jpg");
   background-size: cover;
   background-position: center;
   width: 100%;
@@ -183,7 +187,15 @@
 .newscrol_from::-webkit-scrollbar-thumb:hover {
   background-color: #555;
 }
+.Auth_content_new_content{
+  width: 40%;
+  margin: 0px 30px;
+  padding: 70px 20px;
+  /* border-style: solid ; */
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 
+}
 .newscrol_from::-webkit-scrollbar-track {
   background: #f1f1f1;
 }

@@ -39,10 +39,10 @@ function UserLogin() {
     <div className="Auth_container">
       <div className="Auth_innerContainer">
 
-        <div className="Auth_content new_content">
-          <div className="Auth_logo"></div>
+        <div className="Auth_content_new_content">
+         
           <div className='login_content'>
-            <p className="Auth_heading">Login Your Account </p>
+            <p className="Auth_heading"> <div className="Auth_logo"></div>Login Your Account </p>
             
           </div>
           <form onSubmit={handleSubmit} className="Auth_form">
@@ -84,7 +84,12 @@ function UserLogin() {
           </button>
         </div>
         <div className="Auth_content">
-          <div className="Auth_content_img"></div>
+          <div className="Auth_content_img">
+
+
+
+
+          </div>
         </div>
       </div>
     </div>
