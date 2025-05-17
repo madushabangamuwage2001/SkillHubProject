@@ -1,12 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import NavBar from '../../Components/NavBar/NavBar';
+import VoiceInput from '../../Components/VoiceInput/VoiceInput';
+import './AddNewPost.css';
+
 function AddNewPost() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [media, setMedia] = useState([]);
   const [mediaPreviews, setMediaPreviews] = useState([]); // For storing media preview objects
   const [categories, setCategories] = useState(''); // New state for categories
+  const [isListening, setIsListening] = useState({
+    title: false,
+    description: false
+  });
+  const [interimText, setInterimText] = useState({
+    title: '',
+    description: ''
+  });
+  const [transcribedText, setTranscribedText] = useState({
+    title: '',
+    description: ''
+  });
+  const [voiceHistory, setVoiceHistory] = useState({
+    title: [],
+    description: []
+  });
   const userID = localStorage.getItem('userID');
 
   const handleMediaChange = (e) => {
@@ -63,6 +82,44 @@ function AddNewPost() {
     setMediaPreviews(previews); // Set preview objects
   };
 
+  const handleVoiceInput = (field, text, isFinal) => {
+    if (isFinal) {
+      const finalText = text.trim();
+      setTranscribedText(prev => ({ ...prev, [field]: finalText }));
+      setVoiceHistory(prev => ({
+        ...prev,
+        [field]: [...prev[field], finalText]
+      }));
+      
+      if (field === 'title') {
+        setTitle(prev => {
+          const newText = prev ? `${prev} ${finalText}` : finalText;
+          return newText.trim();
+        });
+      } else if (field === 'description') {
+        setDescription(prev => {
+          const newText = prev ? `${prev} ${finalText}` : finalText;
+          return newText.trim();
+        });
+      }
+    } else {
+      setInterimText(prev => ({ ...prev, [field]: text }));
+    }
+  };
+
+  const startVoiceInput = (field) => {
+    setIsListening(prev => ({ ...prev, [field]: true }));
+    setInterimText(prev => ({ ...prev, [field]: '' }));
+  };
+
+  const stopVoiceInput = (field) => {
+    setIsListening(prev => ({ ...prev, [field]: false }));
+    // Keep the transcribed text visible for 3 seconds
+    setTimeout(() => {
+      setTranscribedText(prev => ({ ...prev, [field]: '' }));
+    }, 3000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -95,25 +152,77 @@ function AddNewPost() {
             <form onSubmit={handleSubmit} className='from_data'>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Title</label>
-                <input
-                  className="Auth_input"
-                  type="text"
-                  placeholder="Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
+                <div className="input-with-voice">
+                  <input
+                    className={`Auth_input ${isListening.title ? 'listening' : ''}`}
+                    type="text"
+                    placeholder={isListening.title ? 'Listening...' : 'Title'}
+                    value={isListening.title ? `${title} ${interimText.title}` : title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                  />
+                  <VoiceInput 
+                    onTextUpdate={handleVoiceInput} 
+                    fieldName="title"
+                    isListening={isListening.title}
+                    onStartListening={() => startVoiceInput('title')}
+                    onStopListening={() => stopVoiceInput('title')}
+                  />
+                  {(transcribedText.title || interimText.title) && (
+                    <div className={`transcribed-text ${isListening.title ? 'listening' : 'completed'}`}>
+                      {isListening.title ? 
+                        `Recording: ${interimText.title}` : 
+                        `Latest: ${transcribedText.title}`}
+                    </div>
+                  )}
+                  {voiceHistory.title.length > 0 && (
+                    <div className="voice-history">
+                      <p className="voice-history-title">Voice Input History:</p>
+                      {voiceHistory.title.map((text, index) => (
+                        <div key={index} className="voice-history-item">
+                          {text}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Description</label>
-                <textarea
-                  className="Auth_input"
-                  placeholder="Description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                  rows={3}
-                />
+                <div className="input-with-voice">
+                  <textarea
+                    className={`Auth_input ${isListening.description ? 'listening' : ''}`}
+                    placeholder={isListening.description ? 'Listening...' : 'Description'}
+                    value={isListening.description ? `${description} ${interimText.description}` : description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                    rows={3}
+                  />
+                  <VoiceInput 
+                    onTextUpdate={handleVoiceInput} 
+                    fieldName="description"
+                    isListening={isListening.description}
+                    onStartListening={() => startVoiceInput('description')}
+                    onStopListening={() => stopVoiceInput('description')}
+                  />
+                  {(transcribedText.description || interimText.description) && (
+                    <div className={`transcribed-text ${isListening.description ? 'listening' : 'completed'}`}>
+                      {isListening.description ? 
+                        `Recording: ${interimText.description}` : 
+                        `Latest: ${transcribedText.description}`}
+                    </div>
+                  )}
+                  {voiceHistory.description.length > 0 && (
+                    <div className="voice-history">
+                      <p className="voice-history-title">Voice Input History:</p>
+                      {voiceHistory.description.map((text, index) => (
+                        <div key={index} className="voice-history-item">
+                          {text}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Category</label>

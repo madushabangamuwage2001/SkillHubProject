@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from '../../Components/NavBar/NavBar';
+import VoiceInput from '../../Components/VoiceInput/VoiceInput';
+
 function UpdatePost() {
   const { id } = useParams(); // Get the post ID from the URL
   const navigate = useNavigate();
@@ -11,6 +13,18 @@ function UpdatePost() {
   const [existingMedia, setExistingMedia] = useState([]); // Initialize as an empty array
   const [newMedia, setNewMedia] = useState([]); // New media files to upload
   const [loading, setLoading] = useState(true); // Add loading state
+  const [isListening, setIsListening] = useState({
+    title: false,
+    description: false
+  });
+  const [interimText, setInterimText] = useState({
+    title: '',
+    description: ''
+  });
+  const [transcribedText, setTranscribedText] = useState({
+    title: '',
+    description: ''
+  });
 
   useEffect(() => {
     // Fetch the post details
@@ -134,6 +148,26 @@ function UpdatePost() {
     }
   };
 
+  const handleVoiceInput = (field, text, isFinal) => {
+    if (isFinal) {
+      setTranscribedText(prev => ({ ...prev, [field]: text }));
+      if (field === 'title') {
+        setTitle(prev => prev ? `${prev} ${text}` : text);
+        setInterimText(prev => ({ ...prev, title: '' }));
+      } else if (field === 'description') {
+        setDescription(prev => prev ? `${prev} ${text}` : text);
+        setInterimText(prev => ({ ...prev, description: '' }));
+      }
+      setIsListening(prev => ({ ...prev, [field]: false }));
+    } else {
+      setInterimText(prev => ({ ...prev, [field]: text }));
+    }
+  };
+
+  const startVoiceInput = (field) => {
+    setIsListening(prev => ({ ...prev, [field]: true }));
+  };
+
   if (loading) {
     return <div>Loading...</div>; // Display a loading message while fetching data
   }
@@ -148,25 +182,55 @@ function UpdatePost() {
             <form onSubmit={handleSubmit} className='from_data'>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Title</label>
-                <input
-                  className="Auth_input"
-                  type="text"
-                  placeholder="Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
+                <div className="input-with-voice">
+                  <input
+                    className={`Auth_input ${isListening.title ? 'listening' : ''}`}
+                    type="text"
+                    placeholder={isListening.title ? 'Listening...' : 'Title'}
+                    value={isListening.title ? `${title} ${interimText.title}` : title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                  />
+                  <VoiceInput 
+                    onTextUpdate={handleVoiceInput} 
+                    fieldName="title"
+                    isListening={isListening.title}
+                    onStartListening={() => startVoiceInput('title')}
+                  />
+                  {(transcribedText.title || interimText.title) && (
+                    <div className="transcribed-text">
+                      {isListening.title ? 
+                        `Listening: ${interimText.title}` : 
+                        `Last input: ${transcribedText.title}`}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Description</label>
-                <textarea
-                  className="Auth_input"
-                  placeholder="Description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                  rows={3}
-                />
+                <div className="input-with-voice">
+                  <textarea
+                    className={`Auth_input ${isListening.description ? 'listening' : ''}`}
+                    placeholder={isListening.description ? 'Listening...' : 'Description'}
+                    value={isListening.description ? `${description} ${interimText.description}` : description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                    rows={3}
+                  />
+                  <VoiceInput 
+                    onTextUpdate={handleVoiceInput} 
+                    fieldName="description"
+                    isListening={isListening.description}
+                    onStartListening={() => startVoiceInput('description')}
+                  />
+                  {(transcribedText.description || interimText.description) && (
+                    <div className="transcribed-text">
+                      {isListening.description ? 
+                        `Listening: ${interimText.description}` : 
+                        `Last input: ${transcribedText.description}`}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Category</label>

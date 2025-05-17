@@ -5,9 +5,10 @@ import { IoMdAdd } from "react-icons/io";
 import './post.css';
 import './Templates.css'; // Import the updated CSS file
 import NavBar from '../../Components/NavBar/NavBar';
-import { FaVideo } from "react-icons/fa";
-import { FaImage } from "react-icons/fa";
+import { FaVideo, FaImage, FaUpload } from "react-icons/fa";
 import { HiCalendarDateRange } from "react-icons/hi2";
+import VoiceInput from '../../Components/VoiceInput/VoiceInput';
+
 function AddLearningPlan() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -23,12 +24,116 @@ function AddLearningPlan() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [category, setCategory] = useState('');
+  const [isListening, setIsListening] = useState({
+    title: false,
+    description: false
+  });
+  const [interimText, setInterimText] = useState({
+    title: '',
+    description: ''
+  });
+  const [transcribedText, setTranscribedText] = useState({
+    title: '',
+    description: ''
+  });
+  const [video, setVideo] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
+  const [showVideoUploadInput, setShowVideoUploadInput] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImage(file);
     setImagePreview(file ? URL.createObjectURL(file) : null);
   };
+
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 30 * 1024 * 1024) {
+        alert("Video must be less than 30MB");
+        e.target.value = '';
+        return;
+      }
+      
+      setVideoLoading(true);
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      const blobURL = URL.createObjectURL(file);
+      
+      video.onloadedmetadata = function() {
+        URL.revokeObjectURL(blobURL);
+        if (video.duration > 30) {
+          alert("Video must be less than 30 seconds long");
+          setVideo(null);
+          setVideoPreview(null);
+          setVideoLoading(false);
+          e.target.value = '';
+          return;
+        }
+        setVideo(file);
+        const objectUrl = URL.createObjectURL(file);
+        setVideoPreview(objectUrl);
+        setVideoLoading(false);
+      }
+      
+      video.onerror = function() {
+        alert("Failed to load video. Please try another file.");
+        setVideoLoading(false);
+        e.target.value = '';
+      }
+      
+      video.src = blobURL;
+    }
+  };
+
+  const handleVideoUpload = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/learningPlan/videoUpload',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(progress);
+          }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Video upload error:', error);
+      throw error;
+    }
+  };
+
+  const VideoPreview = ({ src }) => (
+    <div className="video-preview-wrapper">
+      {uploadProgress > 0 && uploadProgress < 100 && (
+        <div className="upload-progress">
+          <div 
+            className="upload-progress-bar" 
+            style={{ width: `${uploadProgress}%` }}
+          />
+          <span>{uploadProgress}%</span>
+        </div>
+      )}
+      <video
+        controls
+        className="video-preview"
+        preload="metadata"
+      >
+        <source src={src} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  );
 
   const navigate = useNavigate();
 
@@ -39,9 +144,30 @@ function AddLearningPlan() {
     }
   };
 
+  const handleVoiceInput = (field, text, isFinal) => {
+    if (isFinal) {
+      setTranscribedText(prev => ({ ...prev, [field]: text }));
+      if (field === 'title') {
+        setTitle(prev => prev ? `${prev} ${text}` : text);
+        setInterimText(prev => ({ ...prev, title: '' }));
+      } else if (field === 'description') {
+        setDescription(prev => prev ? `${prev} ${text}` : text);
+        setInterimText(prev => ({ ...prev, description: '' }));
+      }
+      setIsListening(prev => ({ ...prev, [field]: false }));
+    } else {
+      setInterimText(prev => ({ ...prev, [field]: text }));
+    }
+  };
+
+  const startVoiceInput = (field) => {
+    setIsListening(prev => ({ ...prev, [field]: true }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setUploadProgress(0);
 
     if (startDate === endDate) {
       alert("Start date and end date cannot be the same.");
@@ -78,6 +204,8 @@ function AddLearningPlan() {
 
     try {
       let imageUrl = '';
+      let videoUrl = '';
+
       if (image) {
         const formData = new FormData();
         formData.append('file', image);
@@ -89,7 +217,16 @@ function AddLearningPlan() {
         imageUrl = uploadResponse.data;
       }
 
-      // Create the new post object
+      if (video) {
+        try {
+          videoUrl = await handleVideoUpload(video);
+        } catch (error) {
+          alert('Failed to upload video. Please try again.');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       const newPost = {
         title,
         description,
@@ -98,21 +235,22 @@ function AddLearningPlan() {
         postOwnerID,
         postOwnerName,
         imageUrl,
+        videoUrl,
         templateID,
-        startDate, // New field
-        endDate,   // New field
-        category   // New field
+        startDate,
+        endDate,
+        category
       };
 
-      // Submit the post data
       await axios.post('http://localhost:8080/learningPlan', newPost);
       alert('Post added successfully!');
       navigate('/allLearningPlan');
     } catch (error) {
-      console.error('Error adding post:', error);
-      alert('Failed to add post.');
+      console.error('Error details:', error.response || error);
+      alert('Failed to create post: ' + (error.response?.data?.message || error.message));
     } finally {
       setIsSubmitting(false);
+      setUploadProgress(0);
     }
   };
 
@@ -153,6 +291,7 @@ function AddLearningPlan() {
                 ))}
               </div>
               {imagePreview && <img src={imagePreview} alt="Preview" className="iframe_preview" />}
+              {videoPreview && <VideoPreview src={videoPreview} />}
               {contentURL && (
                 <iframe
                   src={getEmbedURL(contentURL)}
@@ -182,6 +321,7 @@ function AddLearningPlan() {
                   {imagePreview && <img src={imagePreview} alt="Preview" className="iframe_preview_new" />}
                 </div>
                 <div className='preview_part_sub'>
+                  {videoPreview && <VideoPreview src={videoPreview} />}
                   {contentURL && (
                     <iframe
                       src={getEmbedURL(contentURL)}
@@ -198,6 +338,7 @@ function AddLearningPlan() {
             <div className="template template-3">
               <p className='template_id_one'>template 3</p>
               {imagePreview && <img src={imagePreview} alt="Preview" className="iframe_preview" />}
+              {videoPreview && <VideoPreview src={videoPreview} />}
               {contentURL && (
                 <iframe
                   src={getEmbedURL(contentURL)}
@@ -226,15 +367,30 @@ function AddLearningPlan() {
             <form onSubmit={handleSubmit} className='from_data'>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Title</label>
-                <input
-                  className="Auth_input"
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
+                <div className="input-with-voice">
+                  <input
+                    className={`Auth_input ${isListening.title ? 'listening' : ''}`}
+                    type="text"
+                    value={isListening.title ? `${title} ${interimText.title}` : title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder={isListening.title ? 'Listening...' : 'Title'}
+                    required
+                  />
+                  <VoiceInput 
+                    onTextUpdate={handleVoiceInput} 
+                    fieldName="title"
+                    isListening={isListening.title}
+                    onStartListening={() => startVoiceInput('title')}
+                  />
+                  {(transcribedText.title || interimText.title) && (
+                    <div className="transcribed-text">
+                      {isListening.title ? 
+                        `Listening: ${interimText.title}` : 
+                        `Last input: ${transcribedText.title}`}
+                    </div>
+                  )}
+                </div>
               </div>
-
 
               <div className="Auth_formGroup">
                 <label className="Auth_label">Tags</label>
@@ -257,13 +413,29 @@ function AddLearningPlan() {
               </div>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Description</label>
-                <textarea
-                  className="Auth_input"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                  rows={4}
-                />
+                <div className="input-with-voice">
+                  <textarea
+                    className={`Auth_input ${isListening.description ? 'listening' : ''}`}
+                    value={isListening.description ? `${description} ${interimText.description}` : description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder={isListening.description ? 'Listening...' : 'Description'}
+                    required
+                    rows={4}
+                  />
+                  <VoiceInput 
+                    onTextUpdate={handleVoiceInput} 
+                    fieldName="description"
+                    isListening={isListening.description}
+                    onStartListening={() => startVoiceInput('description')}
+                  />
+                  {(transcribedText.description || interimText.description) && (
+                    <div className="transcribed-text">
+                      {isListening.description ? 
+                        `Listening: ${interimText.description}` : 
+                        `Last input: ${transcribedText.description}`}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Select Your Template</label>
@@ -317,14 +489,23 @@ function AddLearningPlan() {
               </div>
               <hr ></hr>
               <div className="Auth_formGroup newpart_set">
-                <FaVideo
-                  className='newpart_set_icon'
-                  onClick={() => setShowContentURLInput(!showContentURLInput)}
-                />
-                <FaImage
-                  className='newpart_set_icon'
-                  onClick={() => setShowImageUploadInput(!showImageUploadInput)}
-                />
+                <div className="icon-group">
+                  <FaImage
+                    className='newpart_set_icon'
+                    onClick={() => setShowImageUploadInput(!showImageUploadInput)}
+                    title="Upload Image"
+                  />
+                  <FaVideo
+                    className='newpart_set_icon'
+                    onClick={() => setShowContentURLInput(!showContentURLInput)}
+                    title="Add Video URL"
+                  />
+                  <FaUpload
+                    className='newpart_set_icon upload-video-icon'
+                    onClick={() => setShowVideoUploadInput(!showVideoUploadInput)}
+                    title="Upload Video"
+                  />
+                </div>
               </div>
               {showContentURLInput && (
                 <div className="Auth_formGroup">
@@ -350,6 +531,18 @@ function AddLearningPlan() {
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
+                  />
+                </div>
+              )}
+              {showVideoUploadInput && (
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Upload Video (Max 30 seconds)</label>
+                  {videoPreview && <VideoPreview src={videoPreview} />}
+                  <input
+                    className="Auth_input"
+                    type="file"
+                    accept="video/*"
+                    onChange={handleVideoChange}
                   />
                 </div>
               )}

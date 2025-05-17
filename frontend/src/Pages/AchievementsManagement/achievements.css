@@ -1,0 +1,54 @@
+// ...existing styles...
+
+.input-with-voice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.voice-input-btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #004c5d;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.voice-input-btn:hover {
+  background-color: rgba(0, 76, 93, 0.1);
+}
+
+.voice-input-btn.listening {
+  color: #ff0000;
+  animation: pulse 1.5s infinite;
+}
+
+.transcribed-text {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border-left: 3px solid #004c5d;
+  margin-bottom: 8px;
+}
+
+.Auth_input.listening {
+  border-color: #ff0000;
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}

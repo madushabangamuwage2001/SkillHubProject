@@ -1,136 +1,200 @@
-.profile-card {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19);
-  padding: 20px;
-  max-width: 85%;
-  display: flex;
-  gap: 25px;
-  justify-content: center;
-  align-items: flex-start;
-}
-.pro_left_card {
-  flex: 1;
-}
-.profile-image {
-  width: 100%;
-  height: auto;
-  flex: 1;
-  border-radius: 5px;
-}
-.user_data_card_new {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  flex-direction: column;
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 20px;
-}
-.user_data_card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  flex-direction: column;
-}
-.user_data_card_item {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  width: 100%;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-.profile-actions {
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+.continer {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    padding-top: 100px;
 }
 
-.update-button,
-.delete-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.continSection {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
 }
-.user_data_card_item_bio {
-  width: 100%;
-  font-size: 15px;
-  color: #565555;
-  font-weight: 500;
-  margin-top: 8px;
-  font-style: italic;
-  padding-bottom: 10px;
-  text-transform: capitalize;
+
+.profile-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 76, 93, 0.1);
+    padding: 2.5rem;
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    gap: 3rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 76, 93, 0.15);
+}
+
+.pro_left_card {
+    flex: 1;
+}
+
+.profile-image {
+    width: 250px;
+    height: 250px;
+    border-radius: 15px;
+    object-fit: cover;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.user_data_card_new {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-direction: column;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.user_data_card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-direction: column;
+}
+
+.user_data_card_item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: 500;
+}
+
+.profile-actions {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.update-button, .delete-button {
+    padding: 0.8rem 1.8rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .update-button {
-  background-color: #4caf50;
-  color: white;
-  margin-right: 10px;
+    background: #004c5d;
+    color: white;
+    margin-right: 10px;
 }
-.username_card {
-  font-size: 35px;
-  font-weight: 500;
-  text-align: start;
-  width: 100%;
-  text-transform: capitalize;
+
+.update-button:hover {
+    background: #003a47;
+    transform: translateY(-2px);
 }
+
 .delete-button {
-  background-color: red;
-  color: white;
+    background: #ff715b;
+    color: white;
 }
+
+.delete-button:hover {
+    background: #ff5c44;
+    transform: translateY(-2px);
+}
+
+.user_data_card_item_bio {
+    width: 100%;
+    font-size: 16px;
+    color: #444;
+    font-weight: 400;
+    margin-top: 8px;
+    font-style: italic;
+    padding-bottom: 10px;
+    text-transform: capitalize;
+    line-height: 1.5;
+}
+
+.username_card {
+    font-size: 35px;
+    font-weight: 600;
+    color: #004c5d;
+    text-align: start;
+    width: 100%;
+    text-transform: capitalize;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
 .my_post_link {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
+
 .my_post_link_card {
-  width: 380px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19);
-  padding: 10px 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 25px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
 }
+
+.my_post_link_card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 76, 93, 0.12);
+}
+
 .my_post_name_img1 {
-  width: 100px;
-  height: 100px;
-  border-radius: 3px;
-  background-image: url("./img/post.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+    width: 100px;
+    height: 100px;
+    border-radius: 3px;
+    background-image: url("./img/post.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 }
+
 .my_post_name_img2 {
-  width: 100px;
-  height: 100px;
-  border-radius: 3px;
-  background-image: url("./img/skilpost.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+    width: 100px;
+    height: 100px;
+    border-radius: 3px;
+    background-image: url("./img/skilpost.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 }
+
 .my_post_name_img3 {
-  width: 100px;
-  height: 100px;
-  border-radius: 3px;
-  background-image: url("./img/achive.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+    width: 100px;
+    height: 100px;
+    border-radius: 3px;
+    background-image: url("./img/achive.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 }
-.my_post_link_card_name{
-  width: 80%;
-  font-size: 25px;
-  font-weight: 500;
-  text-transform: capitalize;
+
+.my_post_link_card_name {
+    font-size: 1.5rem;
+    color: #004c5d;
+    font-weight: 600;
+    margin: 0;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.user_data_card_icon {
+    color: #ff715b;
+    font-size: 20px;
 }
