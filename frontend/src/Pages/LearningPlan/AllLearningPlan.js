@@ -62,6 +62,21 @@ function AllLearningPlan() {
     window.location.href = `/updateLearningPlan/${id}`;
   };
 
+  const VideoPlayer = ({ videoUrl }) => (
+    <div className="video-container">
+      <video 
+        controls
+        controlsList="nodownload"
+        preload="metadata"
+        className="post-video"
+      >
+        <source src={`http://localhost:8080/learningPlan/videos/${videoUrl}`} type="video/mp4" />
+        <source src={`http://localhost:8080/learningPlan/videos/${videoUrl}`} type="video/webm" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  );
+
   const renderPostByTemplate = (post) => {
     console.log('Rendering post:', post); // Debugging: Log the post object
     if (!post.templateID) { // Use the correct field name
@@ -106,6 +121,7 @@ function AllLearningPlan() {
                 className="iframe_preview_dis"
               />
             )}
+            {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} />}
             {post.contentURL && (
               <iframe
                 src={getEmbedURL(post.contentURL)}
@@ -158,6 +174,7 @@ function AllLearningPlan() {
                 )}
               </div>
               <div className='preview_part_sub'>
+                {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} />}
                 {post.contentURL && (
                   <iframe
                     src={getEmbedURL(post.contentURL)}
@@ -198,6 +215,7 @@ function AllLearningPlan() {
                 className="iframe_preview_dis"
               />
             )}
+            {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} />}
             {post.contentURL && (
               <iframe
                 src={getEmbedURL(post.contentURL)}
