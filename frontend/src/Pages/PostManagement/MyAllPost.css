@@ -1,0 +1,618 @@
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --primary-light: #818cf8;
+  -- عربستان: #7c3aed;
+  --accent: #f59e0b;
+  --success: #10b981;
+  --error: #ef4444;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --container-width: 1280px;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background: var(--background);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.MAPmy-posts-container {
+  min-height: 100vh;
+  padding: var(--space-8);
+}
+
+.MAPmy-posts-content {
+  max-width: var(--container-width);
+  margin: 0 auto;
+}
+
+.MAPposts-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.MAPposts-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: var(--space-4);
+}
+
+.MAPposts-controls {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.MAPsearch-input {
+  flex: 1;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--surface);
+  transition: var(--transition);
+}
+
+.MAPsearch-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.MAPsearch-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.MAPtoggle-my-posts-btn {
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.MAPtoggle-my-posts-btn:hover,
+.MAPtoggle-my-posts-btn.MAPactive {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.MAPcreate-post-btn {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  width: 3.5rem;
+  height: 3.5rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  font-size: 1.5rem;
+}
+
+.MAPcreate-post-btn:hover {
+  background: var(--primary-dark);
+  transform: scale(1.1);
+}
+
+.MAPposts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-6);
+}
+
+.MAPpost-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.MAPpost-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.MAPpost-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.MAPuser-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.MAPuser-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.MAPpost-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.MAPfollow-btn {
+  padding: var(--space-2) var(--space-4);
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.MAPfollow-btn.MAPunfollow {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.MAPfollow-btn:hover {
+  background: var(--primary-dark);
+}
+
+.MAPfollow-btn.MAPunfollow:hover {
+  background: var(--error);
+  color: white;
+}
+
+.MAPpost-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.MAPaction-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  transition: var(--transition);
+}
+
+.MAPaction-btn.MAPedit-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.MAPaction-btn.MAPdelete-btn:hover {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.MAPpost-content {
+  margin-bottom: var(--space-4);
+}
+
+.MAPpost-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-2);
+}
+
+.MAPpost-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.MAPpost-category {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--primary);
+}
+
+.MAPmedia-grid {
+  display: list-item;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+.MAPthree-image-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-2);
+  height: 300px;
+}
+
+.MAPmain-image,
+.MAPsecondary-images .MAPmedia-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.MAPsecondary-images {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.MAPmedia-item {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.MAPmedia-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.MAPmedia-item:hover .MAPmedia-preview {
+  transform: scale(1.05);
+}
+
+.MAPoverlay-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.MAPpost-footer {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-4);
+}
+
+.MAPinteraction-bar {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.MAPlike-btn,
+.MAPcomment-count {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.MAPlike-btn:hover,
+.MAPlike-btn.MAPliked {
+  color: var(--primary);
+}
+
+.MAPcomment-count {
+  cursor: default;
+}
+
+.MAPcomment-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.MAPadd-comment {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.MAPcomment-input,
+.MAPedit-comment-input {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  background: var(--surface);
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.MAPcomment-input:focus,
+.MAPedit-comment-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+.MAPcomment-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.MAPsend-comment-btn {
+  padding: var(--space-2);
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 1.125rem;
+  transition: var(--transition);
+}
+
+.MAPsend-comment-btn:hover {
+  background: var(--primary-dark);
+}
+
+.MAPcomment {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.MAPcomment-content {
+  flex: 1;
+}
+
+.MAPcomment-username {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--space-1);
+}
+
+.MAPcomment-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.MAPcomment-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.MAPcomment-action-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+
+.MAPcomment-action-btn.MAPedit:hover {
+  color: var(--primary);
+}
+
+.MAPcomment-action-btn.MAPdelete:hover {
+  color: var(--error);
+}
+
+.MAPcomment-action-btn.MAPsave:hover {
+  color: var(--success);
+}
+
+.MAPcomment-action-btn.MAPcancel:hover {
+  color: var(--text-secondary);
+}
+
+.MAPno-posts {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--space-12);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.MAPno-posts-icon {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto;
+  background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="%2364748b"%3E%3Cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /%3E%3C/svg%3E') no-repeat center;
+  background-size: contain;
+}
+
+.MAPno-posts-message {
+  margin: var(--space-4) 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.MAPcreate-post-link {
+  padding: var(--space-3) var(--space-6);
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.MAPcreate-post-link:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.MAPmedia-modal {
+  max-width: 90vw;
+  max-height: 90vh;
+  margin: 5vh auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  position: relative;
+  outline: none;
+  box-shadow: var(--shadow-lg);
+}
+
+.MAPmedia-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.MAPclose-modal-btn {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 1.25rem;
+  transition: var(--transition);
+}
+
+.MAPclose-modal-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.MAPmodal-media {
+  max-width: 100%;
+  max-height: calc(90vh - var(--space-8));
+  display: block;
+  margin: 0 auto;
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 768px) {
+  .MAPmy-posts-content {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .MAPposts-title {
+    font-size: 2rem;
+  }
+
+  .MAPposts-controls {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .MAPposts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .MAPmedia-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .MAPthree-image-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .MAPsecondary-images {
+    flex-direction: row;
+    gap: var(--space-2);
+  }
+
+  .MAPmain-image,
+  .MAPsecondary-images .MAPmedia-preview {
+    height: 200px;
+  }
+}
+
+@media (max-width: 640px) {
+  .MAPmy-posts-content {
+    padding: var(--space-4) var(--space-2);
+  }
+
+  .MAPposts-title {
+    font-size: 1.5rem;
+  }
+
+  .MAPcreate-post-btn {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.25rem;
+  }
+
+  .MAPno-posts {
+    padding: var(--space-8);
+  }
+
+  .MAPno-posts-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}

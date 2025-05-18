@@ -1,31 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './post.css';
-import { FaEdit } from "react-icons/fa";
-import { RiDeleteBin6Fill } from "react-icons/ri";
-import { IoIosCreate } from "react-icons/io";
+import { FaEdit } from 'react-icons/fa';
+import { RiDeleteBin6Fill } from 'react-icons/ri';
+import { IoIosCreate } from 'react-icons/io';
+import { HiCalendarDays } from 'react-icons/hi2';
 import NavBar from '../../Components/NavBar/NavBar';
-import { HiCalendarDateRange } from "react-icons/hi2";
+import './AllLearningPlan.css';
 
 function AllLearningPlan() {
-  const [posts, setPosts] = useState([]);
-  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [plans, setPlans] = useState([]);
+  const [filteredPlans, setFilteredPlans] = useState([]);
   const [searchOwnerName, setSearchOwnerName] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const userId = localStorage.getItem('userID');
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchPlans = async () => {
       try {
         const response = await axios.get('http://localhost:8080/learningPlan');
-        setPosts(response.data);
-        setFilteredPosts(response.data); // Initially show all posts
+        setPlans(response.data);
+        setFilteredPlans(response.data);
       } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error('Error fetching learning plans:', error);
+        alert('Failed to load learning plans.');
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchPosts();
-  }, []); // Ensure this runs only once on component mount
+    fetchPlans();
+  }, []);
 
   const getEmbedURL = (url) => {
     try {
@@ -34,27 +38,26 @@ function AllLearningPlan() {
         return `https://www.youtube.com/embed/${videoId}`;
       }
       if (url.includes('youtu.be/')) {
-        const videoId = url.split('youtu.be/')[1];
+        const videoId = url.split('youtu.be/')[1].split('?')[0];
         return `https://www.youtube.com/embed/${videoId}`;
       }
-      return url; // Return the original URL if it's not a YouTube link
+      return url;
     } catch (error) {
       console.error('Invalid URL:', url);
-      return ''; // Return an empty string for invalid URLs
+      return '';
     }
   };
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this post?');
-    if (confirmDelete) {
-      try {
-        await axios.delete(`http://localhost:8080/learningPlan/${id}`);
-        alert('Post deleted successfully!');
-        setFilteredPosts(filteredPosts.filter((post) => post.id !== id)); // Update the list after deletion
-      } catch (error) {
-        console.error('Error deleting post:', error);
-        alert('Failed to delete post.');
-      }
+    if (!window.confirm('Are you sure you want to delete this learning plan?')) return;
+    try {
+      await axios.delete(`http://localhost:8080/learningPlan/${id}`);
+      setPlans((prev) => prev.filter((plan) => plan.id !== id));
+      setFilteredPlans((prev) => prev.filter((plan) => plan.id !== id));
+      alert('Learning plan deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting learning plan:', error);
+      alert('Failed to delete learning plan.');
     }
   };
 
@@ -62,13 +65,23 @@ function AllLearningPlan() {
     window.location.href = `/updateLearningPlan/${id}`;
   };
 
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchOwnerName(value);
+    setFilteredPlans(
+      plans.filter((plan) =>
+        plan.postOwnerName?.toLowerCase().includes(value)
+      )
+    );
+  };
+
   const VideoPlayer = ({ videoUrl }) => (
-    <div className="video-container">
-      <video 
+    <div className="APvideo-container">
+      <video
         controls
         controlsList="nodownload"
         preload="metadata"
-        className="post-video"
+        className="APplan-video"
       >
         <source src={`http://localhost:8080/learningPlan/videos/${videoUrl}`} type="video/mp4" />
         <source src={`http://localhost:8080/learningPlan/videos/${videoUrl}`} type="video/webm" />
@@ -77,57 +90,72 @@ function AllLearningPlan() {
     </div>
   );
 
-  const renderPostByTemplate = (post) => {
-    console.log('Rendering post:', post); // Debugging: Log the post object
-    if (!post.templateID) { // Use the correct field name
-      console.warn('Missing templateID for post:', post); // Warn if templateID is missing
-      return <div className="template template-default">Invalid template ID</div>;
+  const renderPlanByTemplate = (plan) => {
+    if (!plan.templateID) {
+      return <div className="APtemplate APtemplate-default">Invalid template ID</div>;
     }
 
-    switch (post.templateID) { // Use the correct field name
+    const commonContent = (
+      <>
+        <div className="APtemplate-header">
+          <div className="APuser-info">
+            <p className="APuser-name">{plan.postOwnerName || 'Anonymous'}</p>
+          </div>
+          {plan.postOwnerID === userId && (
+            <div className="APaction-buttons">
+              <FaEdit
+                onClick={() => handleUpdate(plan.id)}
+                className="APaction-icon APedit-icon"
+                title="Edit Learning Plan"
+              />
+              <RiDeleteBin6Fill
+                onClick={() => handleDelete(plan.id)}
+                className="APaction-icon APdelete-icon"
+                title="Delete Learning Plan"
+              />
+            </div>
+          )}
+        </div>
+        <h3 className="APtemplate-title">{plan.title}</h3>
+        <p className="APtemplate-dates">
+          <HiCalendarDays /> {plan.startDate} to {plan.endDate}
+        </p>
+        <p className="APtemplate-category">{plan.category || 'Uncategorized'}</p>
+        <hr className="APtemplate-divider" />
+        <p className="APtemplate-description" style={{ whiteSpace: 'pre-line' }}>
+          {plan.description}
+        </p>
+        {plan.tags?.length > 0 && (
+          <div className="APtemplate-tags">
+            {plan.tags.map((tag, index) => (
+              <span key={index} className="APtemplate-tag">#{tag}</span>
+            ))}
+          </div>
+        )}
+      </>
+    );
+
+    switch (plan.templateID) {
       case 1:
         return (
-          <div className="template_dis template-1">
-            <div className='user_details_card'>
-              <div>
-                <div className='name_section_post'>
-                  <p className='name_section_post_owner_name'>{post.postOwnerName}</p>
-                </div>
-              </div>
-              {post.postOwnerID === localStorage.getItem('userID') && (
-                <div className='action_btn_icon_post'>
-                  <FaEdit
-                    onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                  <RiDeleteBin6Fill
-                    onClick={() => handleDelete(post.id)}
-                    className='action_btn_icon' />
-                </div>
-              )}
-            </div>
-            <p className='template_title'>{post.title}</p>
-            <p className='template_dates'><HiCalendarDateRange /> {post.startDate} to {post.endDate} </p>
-            <p className='template_description'>{post.category}</p>
-            <hr></hr>
-            <p className='template_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-            <div className="tags_preview">
-              {post.tags?.map((tag, index) => (
-                <span key={index} className="tagname">#{tag}</span>
-              ))}
-            </div>
-            {post.imageUrl && (
+          <div className="APtemplate APtemplate-1">
+            {commonContent}
+            {plan.imageUrl && (
               <img
-                src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
-                alt={post.title}
-                className="iframe_preview_dis"
+                src={`http://localhost:8080/learningPlan/planImages/${plan.imageUrl}`}
+                alt={plan.title}
+                className="APtemplate-media"
+                onError={(e) => (e.target.style.display = 'none')}
               />
             )}
-            {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} />}
-            {post.contentURL && (
+            {plan.videoUrl && <VideoPlayer videoUrl={plan.videoUrl} />}
+            {plan.contentURL && (
               <iframe
-                src={getEmbedURL(post.contentURL)}
-                title={post.title}
-                className="iframe_preview_dis"
+                src={getEmbedURL(plan.contentURL)}
+                title={plan.title}
+                className="APtemplate-media"
                 frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               ></iframe>
             )}
@@ -135,158 +163,122 @@ function AllLearningPlan() {
         );
       case 2:
         return (
-          <div className="template_dis template-2">
-            <div className='user_details_card'>
-              <div>
-                <div className='name_section_post'>
-                  <p className='name_section_post_owner_name'>{post.postOwnerName}</p>
-                </div>
-                
-              </div>
-              {post.postOwnerID === localStorage.getItem('userID') && (
-                <div className='action_btn_icon_post'>
-                  <FaEdit
-                    onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                  <RiDeleteBin6Fill
-                    onClick={() => handleDelete(post.id)}
-                    className='action_btn_icon' />
-                </div>
-              )}
-            </div>
-            <p className='template_title'>{post.title}</p>
-            <p className='template_dates'><HiCalendarDateRange /> {post.startDate} to {post.endDate} </p>
-            <p className='template_description'>{post.category}</p>
-            <hr></hr>
-            <p className='template_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-            <div className="tags_preview">
-              {post.tags?.map((tag, index) => (
-                <span key={index} className="tagname">#{tag}</span>
-              ))}
-            </div>
-            <div className='preview_part'>
-              <div className='preview_part_sub'>
-                {post.imageUrl && (
-                  <img
-                    src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
-                    alt={post.title}
-                    className="iframe_preview"
-                  />
+          <div className="APtemplate APtemplate-2">
+            {commonContent}
+            {(plan.imageUrl || plan.videoUrl || plan.contentURL) && (
+              <div className="APtemplate-media-split">
+                {plan.imageUrl && (
+                  <div className="APtemplate-media-split-item">
+                    <img
+                      src={`http://localhost:8080/learningPlan/planImages/${plan.imageUrl}`}
+                      alt={plan.title}
+                      className="APtemplate-media"
+                      onError={(e) => (e.target.style.display = 'none')}
+                    />
+                  </div>
+                )}
+                {(plan.videoUrl || plan.contentURL) && (
+                  <div className="APtemplate-media-split-item">
+                    {plan.videoUrl && <VideoPlayer videoUrl={plan.videoUrl} />}
+                    {plan.contentURL && (
+                      <iframe
+                        src={getEmbedURL(plan.contentURL)}
+                        title={plan.title}
+                        className="APtemplate-media"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    )}
+                  </div>
                 )}
               </div>
-              <div className='preview_part_sub'>
-                {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} />}
-                {post.contentURL && (
-                  <iframe
-                    src={getEmbedURL(post.contentURL)}
-                    title={post.title}
-                    className="iframe_preview"
-                    frameBorder="0"
-                    allowFullScreen
-                  ></iframe>
-                )}
-              </div>
-            </div>
+            )}
           </div>
         );
       case 3:
         return (
-          <div className="template_dis template-3">
-            <div className='user_details_card'>
-              <div>
-                <div className='name_section_post'>
-                  <p className='name_section_post_owner_name'>{post.postOwnerName}</p>
-                </div>
-                
-              </div>
-              {post.postOwnerID === localStorage.getItem('userID') && (
-                <div className='action_btn_icon_post'>
-                  <FaEdit
-                    onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                  <RiDeleteBin6Fill
-                    onClick={() => handleDelete(post.id)}
-                    className='action_btn_icon' />
-                </div>
-              )}
-            </div>
-            {post.imageUrl && (
+          <div className="APtemplate APtemplate-3">
+            {plan.imageUrl && (
               <img
-                src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
-                alt={post.title}
-                className="iframe_preview_dis"
+                src={`http://localhost:8080/learningPlan/planImages/${plan.imageUrl}`}
+                alt={plan.title}
+                className="APtemplate-media"
+                onError={(e) => (e.target.style.display = 'none')}
               />
             )}
-            {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} />}
-            {post.contentURL && (
+            {plan.videoUrl && <VideoPlayer videoUrl={plan.videoUrl} />}
+            {plan.contentURL && (
               <iframe
-                src={getEmbedURL(post.contentURL)}
-                title={post.title}
-                className="iframe_preview_dis"
+                src={getEmbedURL(plan.contentURL)}
+                title={plan.title}
+                className="APtemplate-media"
                 frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               ></iframe>
             )}
-            <p className='template_title'>{post.title}</p>
-            <p className='template_dates'><HiCalendarDateRange /> {post.startDate} to {post.endDate} </p>
-            <p className='template_description'>{post.category}</p>
-            <hr></hr>
-            <p className='template_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-            <div className="tags_preview">
-              {post.tags?.map((tag, index) => (
-                <span key={index} className="tagname">#{tag}</span>
-              ))}
-            </div>
+            {commonContent}
           </div>
         );
       default:
-        console.warn('Unknown templateID:', post.templateID); // Warn if templateID is unexpected
         return (
-          <div className="template template-default">
-            <p>Unknown template ID: {post.templateID}</p>
+          <div className="APtemplate APtemplate-default">
+            <p>Unknown template ID: {plan.templateID}</p>
           </div>
         );
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="APloading-container">
+        <div className="APloading-spinner"></div>
+        <p>Loading learning plans...</p>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <div className='continer'>
-        <NavBar />
-        <div className='continSection'>
-          <div className='searchinput'>
-            <input
-              type="text"
-              placeholder="Search by owner name"
-              value={searchOwnerName}
-              onChange={(e) => {
-                const value = e.target.value;
-                setSearchOwnerName(value);
-                setFilteredPosts(
-                  posts.filter((post) =>
-                    post.postOwnerName.toLowerCase().includes(value.toLowerCase())
-                  )
-                );
-              }}
-              className="Auth_input"
-            />
-          </div>
-          <div className='add_new_btn' onClick={() => (window.location.href = '/addLearningPlan')}>
-            <IoIosCreate className='add_new_btn_icon' />
-          </div>
-          <div className='post_card_continer'>
-            {filteredPosts.length === 0 ? (
-              <div className='not_found_box'>
-                <div className='not_found_img'></div>
-                <p className='not_found_msg'>No posts found. Please create a new post.</p>
-                <button className='not_found_btn' onClick={() => (window.location.href = '/addLearningPlan')}>Create New Post</button>
+    <div className="APall-learning-plan-container">
+      <NavBar />
+      <div className="APall-learning-plan-content">
+        <h1 className="APall-learning-plan-title">Explore Learning Plans</h1>
+        <div className="APsearch-container">
+          <input
+            type="text"
+            placeholder="Search by owner name"
+            value={searchOwnerName}
+            onChange={handleSearch}
+            className="APsearch-input"
+          />
+        </div>
+        <button
+          className="APadd-button"
+          onClick={() => (window.location.href = '/addLearningPlan')}
+          title="Add New Learning Plan"
+        >
+          <IoIosCreate className="APadd-button-icon" />
+        </button>
+        <div className="APplans-grid">
+          {filteredPlans.length === 0 ? (
+            <div className="APno-plans">
+              <div className="APno-plans-icon"></div>
+              <p className="APno-plans-message">No learning plans found. Create your first plan!</p>
+              <button
+                className="APcreate-button"
+                onClick={() => (window.location.href = '/addLearningPlan')}
+              >
+                Create New Plan
+              </button>
+            </div>
+          ) : (
+            filteredPlans.map((plan) => (
+              <div key={plan.id} className="APplan-card">
+                {renderPlanByTemplate(plan)}
               </div>
-            ) : (
-              filteredPosts.map((post) => (
-                <div key={post.id} className='post_card_new'>
-                  {renderPostByTemplate(post)}
-                </div>
-              ))
-            )}
-          </div>
+            ))
+          )}
         </div>
       </div>
     </div>

@@ -1,0 +1,253 @@
+.MLPmy-learning-plan-container {
+  min-height: 100vh;
+  background-color: #f7f8fa;
+}
+
+.MLPmy-learning-plan-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+.MLPmy-learning-plan-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.MLPadd-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  background-color: #2563eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s;
+  z-index: 1000;
+}
+
+.MLPadd-button:hover {
+  background-color: #1d4ed8;
+  transform: scale(1.1);
+}
+
+.MLPadd-button-icon {
+  color: white;
+  font-size: 1.75rem;
+}
+
+.MLPplans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  padding: 0 1rem;
+}
+
+.MLPplan-card {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.MLPplan-card:hover {
+  transform: translateY(-4px);
+}
+
+.MLPtemplate {
+  padding: 1.5rem;
+}
+
+.MLPtemplate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.MLPuser-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.MLPuser-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.MLPaction-buttons {
+  display: flex;
+  gap: 0.75rem;
+  width: 100px;
+  height: 100px;
+}
+
+.MLPaction-icon {
+  font-size: 1.25rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.MLPedit-icon:hover {
+  color: #2563eb;
+}
+
+.MLPdelete-icon:hover {
+  color: #ef4444;
+}
+
+.MLPtemplate-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem;
+}
+
+.MLPtemplate-dates {
+  font-size: 0.875rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.MLPtemplate-category {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-bottom: 0.75rem;
+}
+
+.MLPtemplate-divider {
+  border-color: #e5e7eb;
+  margin: 0.75rem 0;
+}
+
+.MLPtemplate-description {
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin: 0 0 0.75rem;
+}
+
+.MLPtemplate-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.MLPtemplate-tag {
+  background-color: #e5e7eb;
+  color: #374151;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.MLPtemplate-media {
+  width: 100%;
+  max-height: 16rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.MLPtemplate-media-split {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+.MLPtemplate-media-split-item {
+  flex: 1;
+}
+
+.MLPvideo-container {
+  width: 100%;
+  margin: 0.75rem 0;
+}
+
+.MLPpost-video {
+  width: 100%;
+  max-height: 16rem;
+  border-radius: 0.5rem;
+}
+
+.MLPno-plans {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.MLPno-plans-icon {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto;
+  background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="%236b7280"%3E%3Cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /%3E%3C/svg%3E') no-repeat center;
+  background-size: contain;
+}
+
+.MLPno-plans-message {
+  margin: 1.5rem 0;
+  font-size: 1.125rem;
+  color: #4b5563;
+}
+
+.MLPcreate-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.MLPcreate-button:hover {
+  background-color: #1d4ed8;
+}
+
+@media (max-width: 640px) {
+  .MLPmy-learning-plan-content {
+    padding: 2rem 0.5rem;
+  }
+
+  .MLPmy-learning-plan-title {
+    font-size: 1.5rem;
+  }
+
+  .MLPplans-grid {
+    grid-template-columns: 1fr;
+    padding: 0 0.5rem;
+  }
+
+  .MLPadd-button {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .MLPadd-button-icon {
+    font-size: 1.5rem;
+  }
+}

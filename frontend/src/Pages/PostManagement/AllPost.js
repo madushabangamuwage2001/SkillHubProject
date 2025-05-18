@@ -1,22 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { IoSend } from "react-icons/io5";
-import { FaEdit } from "react-icons/fa";
-import { RiDeleteBin6Fill } from "react-icons/ri";
-import { BiSolidLike } from "react-icons/bi";
+import { IoSend, IoCreate } from 'react-icons/io5';
+import { FaEdit, FaUserGraduate, FaCommentAlt } from 'react-icons/fa';
+import { RiDeleteBin6Fill } from 'react-icons/ri';
+import { BiSolidLike } from 'react-icons/bi';
+import { MdDelete } from 'react-icons/md';
+import { GrUpdate } from 'react-icons/gr';
+import { FiSave } from 'react-icons/fi';
+import { TbPencilCancel } from 'react-icons/tb';
 import Modal from 'react-modal';
 import NavBar from '../../Components/NavBar/NavBar';
-import { IoIosCreate } from "react-icons/io";
-import { MdDelete } from "react-icons/md";
-import { GrUpdate } from "react-icons/gr";
-import { FiSave } from "react-icons/fi";
-import { TbPencilCancel } from "react-icons/tb";
-import { FaCommentAlt } from "react-icons/fa";
-import { FaUserGraduate } from "react-icons/fa";
 import Pro from '../../Components/NavBar/img/img.png';
 import { fetchUserDetails } from '../../Pages/UserManagement/UserProfile';
-
+import './AllPost.css';
 
 Modal.setAppElement('#root');
 
@@ -27,101 +24,77 @@ function AllPost() {
   const [showMyPosts, setShowMyPosts] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
-  const [followedUsers, setFollowedUsers] = useState([]); // State to track followed users
-  const [newComment, setNewComment] = useState({}); // State for new comments
-  const [editingComment, setEditingComment] = useState({}); // State for editing comments
-  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [followedUsers, setFollowedUsers] = useState([]);
+  const [newComment, setNewComment] = useState({});
+  const [editingComment, setEditingComment] = useState({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [userProfileImage, setUserProfileImage] = useState(null);
+  const [googleProfileImage, setGoogleProfileImage] = useState(null);
+  const [userType, setUserType] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const loggedInUserID = localStorage.getItem('userID'); // Get the logged-in user's ID
-  const userId = localStorage.getItem('userID');
-   const [userProfileImage, setUserProfileImage] = useState();
- const [googleProfileImage, setGoogleProfileImage] = useState(null);
-    const [userType, setUserType] = useState(null);
+  const loggedInUserID = localStorage.getItem('userID');
 
   useEffect(() => {
-    // Fetch all posts from the backend
-    const fetchPosts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/posts');
-        setPosts(response.data);
-        setFilteredPosts(response.data); // Initially show all posts
+        const postResponse = await axios.get('http://localhost:8080/posts');
+        const fetchedPosts = postResponse.data;
+        setPosts(fetchedPosts);
+        setFilteredPosts(fetchedPosts);
 
-        // Fetch post owners' names
-        const userIDs = [...new Set(response.data.map((post) => post.userID))]; // Get unique userIDs
-        const ownerPromises = userIDs.map((userID) =>
-          axios.get(`http://localhost:8080/user/${userID}`)
-            .then((res) => ({
-              userID,
-              fullName: res.data.fullname,
-            }))
-            .catch((error) => {
-              if (error.response && error.response.status === 404) {
-                // Handle case where user is deleted
-                console.warn(`User with ID ${userID} not found. Removing their posts.`);
-                setPosts((prevPosts) => prevPosts.filter((post) => post.userID !== userID));
-                setFilteredPosts((prevFilteredPosts) => prevFilteredPosts.filter((post) => post.userID !== userID));
-              } else {
-                console.error(`Error fetching user details for userID ${userID}:`, error);
-              }
+        const userIDs = [...new Set(fetchedPosts.map((post) => post.userID))];
+        const ownerPromises = userIDs.map(async (userID) => {
+          try {
+            const res = await axios.get(`http://localhost:8080/user/${userID}`);
+            return { userID, fullName: res.data.fullname || 'Anonymous' };
+          } catch (error) {
+            if (error.response?.status === 404) {
+              setPosts((prev) => prev.filter((post) => post.userID !== userID));
+              setFilteredPosts((prev) => prev.filter((post) => post.userID !== userID));
               return { userID, fullName: 'Anonymous' };
-            })
-        );
-        const owners = await Promise.all(ownerPromises);
-        const ownerMap = owners.reduce((acc, owner) => {
-          acc[owner.userID] = owner.fullName;
-          return acc;
-        }, {});
-        console.log('Post Owners Map:', ownerMap); // Debug log to verify postOwners map
-        setPostOwners(ownerMap);
-      } catch (error) {
-        console.error('Error fetching posts:', error); // Log error for fetching posts
-      }
-    };
-
-    fetchPosts();
-  }, []);
-  useEffect(() => {
-    const storedUserType = localStorage.getItem('userType');
-    setUserType(storedUserType);
-    if (storedUserType === 'google') {
-        const googleImage = localStorage.getItem('googleProfileImage');
-        setGoogleProfileImage(googleImage);
-    } else if (userId) {
-        fetchUserDetails(userId).then((data) => {
-            if (data && data.profilePicturePath) {
-                setUserProfileImage(`http://localhost:8080/uploads/profile/${data.profilePicturePath}`);
             }
+            console.error(`Error fetching user ${userID}:`, error);
+            return { userID, fullName: 'Anonymous' };
+          }
         });
-    }
-}, [userId]);
+        const owners = await Promise.all(ownerPromises);
+        setPostOwners(owners.reduce((acc, owner) => ({ ...acc, [owner.userID]: owner.fullName }), {}));
 
-  useEffect(() => {
-    const fetchFollowedUsers = async () => {
-      const userID = localStorage.getItem('userID');
-      if (userID) {
-        try {
-          const response = await axios.get(`http://localhost:8080/user/${userID}/followedUsers`);
-          setFollowedUsers(response.data);
-        } catch (error) {
-          console.error('Error fetching followed users:', error);
+        if (loggedInUserID) {
+          const followResponse = await axios.get(`http://localhost:8080/user/${loggedInUserID}/followedUsers`);
+          setFollowedUsers(followResponse.data);
         }
+
+        const storedUserType = localStorage.getItem('userType');
+        setUserType(storedUserType);
+        if (storedUserType === 'google') {
+          const googleImage = localStorage.getItem('googleProfileImage');
+          setGoogleProfileImage(googleImage);
+        } else if (loggedInUserID) {
+          const data = await fetchUserDetails(loggedInUserID);
+          if (data?.profilePicturePath) {
+            setUserProfileImage(`http://localhost:8080/uploads/profile/${data.profilePicturePath}`);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        alert('Failed to load posts.');
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchFollowedUsers();
-  }, []);
+    fetchData();
+  }, [loggedInUserID]);
 
   const handleDelete = async (postId) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this post?');
-    if (!confirmDelete) {
-      return; // Exit if the user cancels the confirmation
-    }
-
+    if (!window.confirm('Are you sure you want to delete this post?')) return;
     try {
       await axios.delete(`http://localhost:8080/posts/${postId}`);
+      setPosts((prev) => prev.filter((post) => post.id !== postId));
+      setFilteredPosts((prev) => prev.filter((post) => post.id !== postId));
       alert('Post deleted successfully!');
-      setPosts(posts.filter((post) => post.id !== postId)); // Remove the deleted post from the UI
-      setFilteredPosts(filteredPosts.filter((post) => post.id !== postId)); // Update filtered posts
     } catch (error) {
       console.error('Error deleting post:', error);
       alert('Failed to delete post.');
@@ -129,188 +102,171 @@ function AllPost() {
   };
 
   const handleUpdate = (postId) => {
-    navigate(`/updatePost/${postId}`); // Navigate to the UpdatePost page with the post ID
+    navigate(`/updatePost/${postId}`);
   };
 
   const handleMyPostsToggle = () => {
-    if (showMyPosts) {
-      // Show all posts
-      setFilteredPosts(posts);
-    } else {
-      // Filter posts by logged-in user ID
-      setFilteredPosts(posts.filter((post) => post.userID === loggedInUserID));
-    }
-    setShowMyPosts(!showMyPosts); // Toggle the state
+    setShowMyPosts((prev) => {
+      const newShowMyPosts = !prev;
+      setFilteredPosts(newShowMyPosts ? posts.filter((post) => post.userID === loggedInUserID) : posts);
+      return newShowMyPosts;
+    });
   };
 
   const handleLike = async (postId) => {
-    const userID = localStorage.getItem('userID');
-    if (!userID) {
+    if (!loggedInUserID) {
       alert('Please log in to like a post.');
       return;
     }
     try {
       const response = await axios.put(`http://localhost:8080/posts/${postId}/like`, null, {
-        params: { userID },
+        params: { userID: loggedInUserID },
       });
-
-      // Update the specific post's likes in the state
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId ? { ...post, likes: response.data.likes } : post
-        )
+      const updatedLikes = response.data.likes;
+      setPosts((prev) =>
+        prev.map((post) => (post.id === postId ? { ...post, likes: updatedLikes } : post))
       );
-
-      setFilteredPosts((prevFilteredPosts) =>
-        prevFilteredPosts.map((post) =>
-          post.id === postId ? { ...post, likes: response.data.likes } : post
-        )
+      setFilteredPosts((prev) =>
+        prev.map((post) => (post.id === postId ? { ...post, likes: updatedLikes } : post))
       );
     } catch (error) {
       console.error('Error liking post:', error);
+      alert('Failed to like post.');
     }
   };
 
   const handleFollowToggle = async (postOwnerID) => {
-    const userID = localStorage.getItem('userID');
-    if (!userID) {
+    if (!loggedInUserID) {
       alert('Please log in to follow/unfollow users.');
       return;
     }
     try {
       if (followedUsers.includes(postOwnerID)) {
-        // Unfollow logic
-        await axios.put(`http://localhost:8080/user/${userID}/unfollow`, { unfollowUserID: postOwnerID });
-        setFollowedUsers(followedUsers.filter((id) => id !== postOwnerID));
+        await axios.put(`http://localhost:8080/user/${loggedInUserID}/unfollow`, {
+          unfollowUserID: postOwnerID,
+        });
+        setFollowedUsers((prev) => prev.filter((id) => id !== postOwnerID));
       } else {
-        // Follow logic
-        await axios.put(`http://localhost:8080/user/${userID}/follow`, { followUserID: postOwnerID });
-        setFollowedUsers([...followedUsers, postOwnerID]);
+        await axios.put(`http://localhost:8080/user/${loggedInUserID}/follow`, {
+          followUserID: postOwnerID,
+        });
+        setFollowedUsers((prev) => [...prev, postOwnerID]);
       }
     } catch (error) {
-      console.error('Error toggling follow state:', error);
+      console.error('Error toggling follow:', error);
+      alert('Failed to update follow status.');
     }
   };
 
   const handleAddComment = async (postId) => {
-    const userID = localStorage.getItem('userID');
-    if (!userID) {
+    if (!loggedInUserID) {
       alert('Please log in to comment.');
       return;
     }
-    const content = newComment[postId] || ''; // Get the comment content for the specific post
-    if (!content.trim()) {
+    const content = (newComment[postId] || '').trim();
+    if (!content) {
       alert('Comment cannot be empty.');
       return;
     }
     try {
       const response = await axios.post(`http://localhost:8080/posts/${postId}/comment`, {
-        userID,
+        userID: loggedInUserID,
         content,
       });
-
-      // Update the specific post's comments in the state
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
+      setPosts((prev) =>
+        prev.map((post) =>
           post.id === postId ? { ...post, comments: response.data.comments } : post
         )
       );
-
-      setFilteredPosts((prevFilteredPosts) =>
-        prevFilteredPosts.map((post) =>
+      setFilteredPosts((prev) =>
+        prev.map((post) =>
           post.id === postId ? { ...post, comments: response.data.comments } : post
         )
       );
-
-      setNewComment({ ...newComment, [postId]: '' });
+      setNewComment((prev) => ({ ...prev, [postId]: '' }));
     } catch (error) {
       console.error('Error adding comment:', error);
+      alert('Failed to add comment.');
     }
   };
 
   const handleDeleteComment = async (postId, commentId) => {
-    const userID = localStorage.getItem('userID');
+    if (!window.confirm('Are you sure you want to delete this comment?')) return;
     try {
       await axios.delete(`http://localhost:8080/posts/${postId}/comment/${commentId}`, {
-        params: { userID },
+        params: { userID: loggedInUserID },
       });
-
-      // Update state to remove the deleted comment
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
+      setPosts((prev) =>
+        prev.map((post) =>
           post.id === postId
-            ? { ...post, comments: post.comments.filter((comment) => comment.id !== commentId) }
+            ? { ...post, comments: post.comments.filter((c) => c.id !== commentId) }
             : post
         )
       );
-
-      setFilteredPosts((prevFilteredPosts) =>
-        prevFilteredPosts.map((post) =>
+      setFilteredPosts((prev) =>
+        prev.map((post) =>
           post.id === postId
-            ? { ...post, comments: post.comments.filter((comment) => comment.id !== commentId) }
+            ? { ...post, comments: post.comments.filter((c) => c.id !== commentId) }
             : post
         )
       );
     } catch (error) {
       console.error('Error deleting comment:', error);
+      alert('Failed to delete comment.');
     }
   };
 
   const handleSaveComment = async (postId, commentId, content) => {
+    if (!content.trim()) {
+      alert('Comment cannot be empty.');
+      return;
+    }
     try {
-      const userID = localStorage.getItem('userID');
       await axios.put(`http://localhost:8080/posts/${postId}/comment/${commentId}`, {
-        userID,
+        userID: loggedInUserID,
         content,
       });
-
-      // Update the comment in state
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
+      setPosts((prev) =>
+        prev.map((post) =>
           post.id === postId
             ? {
-              ...post,
-              comments: post.comments.map((comment) =>
-                comment.id === commentId ? { ...comment, content } : comment
-              ),
-            }
+                ...post,
+                comments: post.comments.map((c) =>
+                  c.id === commentId ? { ...c, content } : c
+                ),
+              }
             : post
         )
       );
-
-      setFilteredPosts((prevFilteredPosts) =>
-        prevFilteredPosts.map((post) =>
+      setFilteredPosts((prev) =>
+        prev.map((post) =>
           post.id === postId
             ? {
-              ...post,
-              comments: post.comments.map((comment) =>
-                comment.id === commentId ? { ...comment, content } : comment
-              ),
-            }
+                ...post,
+                comments: post.comments.map((c) =>
+                  c.id === commentId ? { ...c, content } : c
+                ),
+              }
             : post
         )
       );
-
-      setEditingComment({}); // Clear editing state
+      setEditingComment({});
     } catch (error) {
       console.error('Error saving comment:', error);
+      alert('Failed to save comment.');
     }
   };
-//post image devloped
-
 
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-
-    // Filter posts based on title, description, or category
     const filtered = posts.filter(
       (post) =>
         post.title.toLowerCase().includes(query) ||
         post.description.toLowerCase().includes(query) ||
-        (post.category && post.category.toLowerCase().includes(query))
+        (post.category || '').toLowerCase().includes(query)
     );
-    setFilteredPosts(filtered);
+    setFilteredPosts(showMyPosts ? filtered.filter((post) => post.userID === loggedInUserID) : filtered);
   };
 
   const openModal = (mediaUrl) => {
@@ -323,181 +279,218 @@ function AllPost() {
     setIsModalOpen(false);
   };
 
+  if (isLoading) {
+    return (
+      <div className="ANPloading-container">
+        <div className="ANPloading-spinner"></div>
+        <p>Loading posts...</p>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <div className='continer'>
-        <NavBar />
-        <div className='continSection'>
-          <div className='searchinput'>
+    <div className="ANPall-posts-container">
+      <NavBar />
+      <div className="ANPall-posts-content">
+        <div className="ANPposts-header">
+          <h1 className="ANPposts-title">Explore Posts</h1>
+          <div className="ANPposts-controls">
             <input
               type="text"
-              className="Auth_input"
-              placeholder="Search posts by title, description, or category"
+              className="ANPsearch-input"
+              placeholder="Search by title, description, or category"
               value={searchQuery}
               onChange={handleSearch}
             />
+            <button
+              className={`ANPtoggle-my-posts-btn ${showMyPosts ? 'ANPactive' : ''}`}
+              onClick={handleMyPostsToggle}
+            >
+              {showMyPosts ? 'All Posts' : 'My Posts'}
+            </button>
           </div>
-          <div className='add_new_btn' onClick={() => (window.location.href = '/addNewPost')}>
-            <IoIosCreate className='add_new_btn_icon' />
-          </div>
-          <div className='post_card_continer'>
-            {filteredPosts.length === 0 ? (
-              <div className='not_found_box'>
-                <div className='not_found_img'></div>
-                <p className='not_found_msg'>No posts found. Please create a new post.</p>
-                <button className='not_found_btn' onClick={() => (window.location.href = '/addNewPost')}>Create New Post</button>
-              </div>
-            ) : (
-              filteredPosts.map((post) => (
-                <div key={post.id} className='post_card'>
-                  
-                  <div className='user_details_card'>
-                    
-                    <div className='name_section_post' >
+        </div>
+        <button
+          className="ANPcreate-post-btn"
+          onClick={() => navigate('/addNewPost')}
+          title="Create New Post"
+        >
+          <IoCreate />
+        </button>
+        <div className="ANPposts-grid">
+          {filteredPosts.length === 0 ? (
+            <div className="ANPno-posts">
+              <div className="ANPno-posts-icon"></div>
+              <p className="ANPno-posts-message">
+                {showMyPosts ? 'You haven’t created any posts yet.' : 'No posts found.'}
+              </p>
+              <button className="ANPcreate-post-link" onClick={() => navigate('/addNewPost')}>
+                Create New Post
+              </button>
+            </div>
+          ) : (
+            filteredPosts.map((post) => (
+              <div key={post.id} className="ANPpost-card">
+                <div className="ANPpost-header">
+                  <div className="ANPuser-info">
                     {googleProfileImage ? (
-                            <img
-                                src={googleProfileImage}
-                                alt="Google Profile"
-                                className="nav_item_icon"
-                                style={{ width: '40px', height: '40px', borderRadius: '50%' }}
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = Pro;
-                                }}
-                                onClick={() => {
-                                    window.location.href = '/googalUserPro';
-                                }}
-                            />
-                        ) : userProfileImage ? (
-                            <img
-                                src={userProfileImage}
-                                alt="User Profile"
-                                className="nav_item_icon"
-                                style={{ width: '40px', height: '40px', borderRadius: '50%' }}
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = Pro;
-                                }}
-                                onClick={() => {
-                                    window.location.href = '/userProfile';
-                                }}
-                            />
-                        ) : (
-                            <FaUserGraduate
-                                className='nav_item_icon'
-                                onClick={() => {
-                                    window.location.href = '/userProfile';
-                                }}
-                            />
-                        )}
-                      <p className='name_section_post_owner_name'>{postOwners[post.userID] || 'Anonymous'}</p>
-                      {post.userID !== loggedInUserID && (
-                        <button
-                          className={followedUsers.includes(post.userID) ? 'flow_btn_unfalow' : 'flow_btn'}
-                          onClick={() => handleFollowToggle(post.userID)}
-                        >
-                          {followedUsers.includes(post.userID) ? 'Unfollow' : 'Follow'}
-                        </button>
-                      )}
-                    </div>
-                    {post.userID === loggedInUserID && (
-                      <div>
-                        <div className='action_btn_icon_post'>
-                          <FaEdit
-                            onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                          <RiDeleteBin6Fill
-                            onClick={() => handleDelete(post.id)}
-                            className='action_btn_icon' />
-                        </div>
-                      </div>
+                      <img
+                        src={googleProfileImage}
+                        alt="Profile"
+                        className="ANPuser-avatar"
+                        onError={(e) => (e.target.src = Pro)}
+                        onClick={() => navigate('/googalUserPro')}
+                      />
+                    ) : userProfileImage ? (
+                      <img
+                        src={userProfileImage}
+                        alt="Profile"
+                        className="ANPuser-avatar"
+                        onError={(e) => (e.target.src = Pro)}
+                        onClick={() => navigate('/userProfile')}
+                      />
+                    ) : (
+                      <FaUserGraduate
+                        className="ANPuser-avatar-icon"
+                        onClick={() => navigate('/userProfile')}
+                      />
                     )}
+                    <div className="ANPuser-details">
+                      <span className="ANPuser-name">{postOwners[post.userID] || 'Anonymous'}</span>
+                      <span className="ANPpost-date">
+                        {new Date(post.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </span>
+                    </div>
                   </div>
-                  
-                  
-                  <div className='user_details_card_di'>
-
-                    
-                    
-                    <p className='card_post_title'>
-                      
-                      
-                      
-                      
-                      {post.title}</p>
-                    <p className='card_post_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-                    <p className='card_post_category' style={{color:'black'}}>Category: {post.category || 'Uncategorized'}</p>
-
-                  </div>
-                  <div className="media-collage">
-                    {post.media.slice(0, 4).map((mediaUrl, index) => (
+                  {post.userID !== loggedInUserID && (
+                    <button
+                      className={`ANPfollow-btn ${followedUsers.includes(post.userID) ? 'ANPunfollow' : ''}`}
+                      onClick={() => handleFollowToggle(post.userID)}
+                    >
+                      {followedUsers.includes(post.userID) ? 'Unfollow' : 'Follow'}
+                    </button>
+                  )}
+                  {post.userID === loggedInUserID && (
+                    <div className="ANPpost-actions">
+                      <button
+                        className="ANPaction-btn ANPedit-btn"
+                        onClick={() => handleUpdate(post.id)}
+                        title="Edit Post"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className="ANPaction-btn ANPdelete-btn"
+                        onClick={() => handleDelete(post.id)}
+                        title="Delete Post"
+                      >
+                        <RiDeleteBin6Fill />
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="ANPpost-content">
+                  <h2 className="ANPpost-title">{post.title}</h2>
+                  <p className="ANPpost-description" style={{ whiteSpace: 'pre-line' }}>
+                    {post.description}
+                  </p>
+                  <p className="ANPpost-category">Category: {post.category || 'Uncategorized'}</p>
+                </div>
+                <div className="ANPmedia-grid">
+                  {post.media.length === 3 ? (
+                    <div className="ANPthree-image-layout">
+                      <div className="ANPmain-image">
+                        <img
+                          className="ANPmedia-preview"
+                          src={`http://localhost:8080${post.media[0]}`}
+                          alt="Main media"
+                          onClick={() => openModal(post.media[0])}
+                        />
+                      </div>
+                      <div className="ANPsecondary-images">
+                        <img
+                          className="ANPmedia-preview"
+                          src={`http://localhost:8080${post.media[1]}`}
+                          alt="Second media"
+                          onClick={() => openModal(post.media[1])}
+                        />
+                        <img
+                          className="ANPmedia-preview"
+                          src={`http://localhost:8080${post.media[2]}`}
+                          alt="Third media"
+                          onClick={() => openModal(post.media[2])}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    post.media.slice(0, 4).map((mediaUrl, index) => (
                       <div
                         key={index}
-                        className={`media-item ${post.media.length > 4 && index === 3 ? 'media-overlay' : ''}`}
+                        className={`ANPmedia-item ${post.media.length > 4 && index === 3 ? 'ANPmedia-overlay' : ''}`}
                         onClick={() => openModal(mediaUrl)}
                       >
                         {mediaUrl.endsWith('.mp4') ? (
-                          <video controls>
+                          <video className="ANPmedia-preview">
                             <source src={`http://localhost:8080${mediaUrl}`} type="video/mp4" />
-                            Your browser does not support the video tag.
                           </video>
                         ) : (
-                          <img src={`http://localhost:8080${mediaUrl}`} alt="Post Media" />
+                          <img
+                            className="ANPmedia-preview"
+                            src={`http://localhost:8080${mediaUrl}`}
+                            alt={`Media ${index}`}
+                          />
                         )}
                         {post.media.length > 4 && index === 3 && (
-                          <div className="overlay-text">+{post.media.length - 4}</div>
+                          <div className="ANPoverlay-text">+{post.media.length - 4}</div>
                         )}
                       </div>
-                    ))}
+                    ))
+                  )}
+                </div>
+                <div className="ANPpost-footer">
+                  <div className="ANPinteraction-bar">
+                    <button
+                      className={`ANPlike-btn ${post.likes?.[loggedInUserID] ? 'ANPliked' : ''}`}
+                      onClick={() => handleLike(post.id)}
+                    >
+                      <BiSolidLike />{' '}
+                      {Object.values(post.likes || {}).filter((liked) => liked).length}
+                    </button>
+                    <span className="ANPcomment-count">
+                      <FaCommentAlt /> {post.comments?.length || 0}
+                    </span>
                   </div>
-                  <div className='like_coment_lne'>
-                    <div className='like_btn_con'>
-                      <BiSolidLike
-                        className={post.likes?.[localStorage.getItem('userID')] ? 'unlikebtn' : 'likebtn'}
-                        onClick={() => handleLike(post.id)}
-                      >
-                        {post.likes?.[localStorage.getItem('userID')] ? 'Unlike' : 'Like'}
-                      </BiSolidLike>
-                      <p className='like_num'>
-                        {Object.values(post.likes || {}).filter((liked) => liked).length}
-                      </p>
-                    </div>
-                    <div className=''>
-                      <div className='like_btn_con'>
-                        <FaCommentAlt
-                          className='combtn'
-                        />
-                        <p className='like_num'>
-                          {post.comments?.length || 0}
-                        </p>
-                      </div>
-
-                    </div>
-                  </div>
-                  <div className='withsett'>
-                    <div className='add_comennt_con'>
+                  <div className="ANPcomment-section">
+                    <div className="ANPadd-comment">
                       <input
                         type="text"
-                        className='add_coment_input'
-                        placeholder="Add a comment"
+                        className="ANPcomment-input"
+                        placeholder="Add a comment..."
                         value={newComment[post.id] || ''}
                         onChange={(e) =>
                           setNewComment({ ...newComment, [post.id]: e.target.value })
                         }
+                        onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.id)}
                       />
-                      <IoSend
+                      <button
+                        className="ANPsend-comment-btn"
                         onClick={() => handleAddComment(post.id)}
-                        className='add_coment_btn'
-                      />
+                      >
+                        <IoSend />
+                      </button>
                     </div>
-                    <br/>
                     {post.comments?.map((comment) => (
-                      <div key={comment.id} className='coment_full_card'>
-                        <div className='comnt_card'>
-                          <p className='comnt_card_username'>{comment.userFullName}</p>
+                      <div key={comment.id} className="ANPcomment">
+                        <div className="ANPcomment-content">
+                          <span className="ANPcomment-username">{comment.userFullName}</span>
                           {editingComment.id === comment.id ? (
                             <input
                               type="text"
-                              className='edit_comment_input'
+                              className="ANPedit-comment-input"
                               value={editingComment.content}
                               onChange={(e) =>
                                 setEditingComment({ ...editingComment, content: e.target.value })
@@ -505,76 +498,90 @@ function AllPost() {
                               autoFocus
                             />
                           ) : (
-                            <p className='comnt_card_coment'>{comment.content}</p>
+                            <p className="ANPcomment-text">{comment.content}</p>
                           )}
                         </div>
-
-                        <div className='coment_action_btn'>
-                          {comment.userID === loggedInUserID && (
-                            <>
-                              {editingComment.id === comment.id ? (
+                        {(comment.userID === loggedInUserID || post.userID === loggedInUserID) && (
+                          <div className="ANPcomment-actions">
+                            {comment.userID === loggedInUserID &&
+                              (editingComment.id === comment.id ? (
                                 <>
-                                  <FiSave className='coment_btn'
+                                  <button
+                                    className="ANPcomment-action-btn ANPsave"
                                     onClick={() =>
                                       handleSaveComment(post.id, comment.id, editingComment.content)
-                                    } />
-                                  <TbPencilCancel className='coment_btn'
-                                    onClick={() => setEditingComment({})} />
-
+                                    }
+                                  >
+                                    <FiSave />
+                                  </button>
+                                  <button
+                                    className="ANPcomment-action-btn ANPcancel"
+                                    onClick={() => setEditingComment({})}
+                                  >
+                                    <TbPencilCancel />
+                                  </button>
                                 </>
                               ) : (
                                 <>
-                                  <GrUpdate className='coment_btn' onClick={() =>
-                                    setEditingComment({ id: comment.id, content: comment.content })
-                                  } />
-                                  <MdDelete className='coment_btn' onClick={() => handleDeleteComment(post.id, comment.id)} />
+                                  <button
+                                    className="ANPcomment-action-btn ANPedit"
+                                    onClick={() =>
+                                      setEditingComment({ id: comment.id, content: comment.content })
+                                    }
+                                  >
+                                    <GrUpdate />
+                                  </button>
+                                  <button
+                                    className="ANPcomment-action-btn ANPdelete"
+                                    onClick={() => handleDeleteComment(post.id, comment.id)}
+                                  >
+                                    <MdDelete />
+                                  </button>
                                 </>
-                              )}
-                            </>
-                          )}
-                          {post.userID === loggedInUserID && comment.userID !== loggedInUserID && (
-
-
-<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" class="action_btn_icon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M17 4H22V6H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V6H2V4H7V2H17V4ZM9 9V17H11V9H9ZM13 9V17H15V9H13Z"  onClick={() => handleDeleteComment(post.id, comment.id)}></path></svg>
-                            // <button
-                            //   className='coment_btn'
-                            //   onClick={() => handleDeleteComment(post.id, comment.id)}
-                            // >
-                            //   Delete
-                            // </button>
-                          )}
-                        </div>
+                              ))}
+                            {post.userID === loggedInUserID && comment.userID !== loggedInUserID && (
+                              <button
+                                className="ANPcomment-action-btn ANPdelete"
+                                onClick={() => handleDeleteComment(post.id, comment.id)}
+                              >
+                                <MdDelete />
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     ))}
-
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              </div>
+            ))
+          )}
         </div>
-  
       </div>
-
-      {/* Modal for displaying full media */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         contentLabel="Media Modal"
-        className="media-modal"
-        overlayClassName="media-modal-overlay"
+        className="ANPmedia-modal"
+        overlayClassName="ANPmedia-modal-overlay"
       >
-        <button className="close-modal-btn" onClick={closeModal}>x</button>
-        {selectedMedia && selectedMedia.endsWith('.mp4') ? (
-          <video controls className="modal-media">
+        <button className="ANPclose-modal-btn" onClick={closeModal} title="Close">
+          ×
+        </button>
+        {selectedMedia?.endsWith('.mp4') ? (
+          <video controls className="ANPmodal-media">
             <source src={`http://localhost:8080${selectedMedia}`} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         ) : (
-          <img src={`http://localhost:8080${selectedMedia}`} alt="Full Media" className="modal-media" />
+          <img
+            src={`http://localhost:8080${selectedMedia}`}
+            alt="Full Media"
+            className="ANPmodal-media"
+          />
         )}
       </Modal>
-    </div >
+    </div>
   );
 }
 

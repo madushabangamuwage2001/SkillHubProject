@@ -3,44 +3,39 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from '../../Components/NavBar/NavBar';
 import VoiceInput from '../../Components/VoiceInput/VoiceInput';
+import './UpdatePost.css';
 
 function UpdatePost() {
-  const { id } = useParams(); // Get the post ID from the URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState(''); // New state for category
-  const [existingMedia, setExistingMedia] = useState([]); // Initialize as an empty array
-  const [newMedia, setNewMedia] = useState([]); // New media files to upload
-  const [loading, setLoading] = useState(true); // Add loading state
-  const [isListening, setIsListening] = useState({
-    title: false,
-    description: false
-  });
-  const [interimText, setInterimText] = useState({
-    title: '',
-    description: ''
-  });
-  const [transcribedText, setTranscribedText] = useState({
-    title: '',
-    description: ''
-  });
+  const [category, setCategory] = useState('');
+  const [existingMedia, setExistingMedia] = useState([]);
+  const [newMedia, setNewMedia] = useState([]);
+  const [newMediaPreviews, setNewMediaPreviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isListening, setIsListening] = useState({ title: false, description: false });
+  const [interimText, setInterimText] = useState({ title: '', description: '' });
+  const [transcribedText, setTranscribedText] = useState({ title: '', description: '' });
+  const [voiceHistory, setVoiceHistory] = useState({ title: [], description: [] });
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
-    // Fetch the post details
     const fetchPost = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/posts/${id}`);
         const post = response.data;
-        setTitle(post.title || ''); // Ensure title is not undefined
-        setDescription(post.description || ''); // Ensure description is not undefined
-        setCategory(post.category || ''); // Set category
-        setExistingMedia(post.media || []); // Ensure media is an array
-        setLoading(false); // Set loading to false after data is fetched
+        setTitle(post.title || '');
+        setDescription(post.description || '');
+        setCategory(post.category || '');
+        setExistingMedia(post.media || []);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching post:', error);
         alert('Failed to fetch post details.');
-        setLoading(false); // Set loading to false even if there's an error
+        setLoading(false);
       }
     };
 
@@ -48,19 +43,13 @@ function UpdatePost() {
   }, [id]);
 
   const handleDeleteMedia = async (mediaUrl) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this media file?');
-    if (!confirmDelete) {
-      return;
-    }
-
+    if (!window.confirm('Are you sure you want to delete this media file?')) return;
     try {
-      await axios.delete(`http://localhost:8080/posts/${id}/media`, {
-        data: { mediaUrl },
-      });
-      setExistingMedia(existingMedia.filter((url) => url !== mediaUrl)); // Remove from UI
+      await axios.delete(`http://localhost:8080/posts/${id}/media`, { data: { mediaUrl } });
+      setExistingMedia((prev) => prev.filter((url) => url !== mediaUrl));
       alert('Media file deleted successfully!');
     } catch (error) {
-      console.error('Error deleting media file:', error);
+      console.error('Error deleting media:', error);
       alert('Failed to delete media file.');
     }
   };
@@ -70,7 +59,6 @@ function UpdatePost() {
       const video = document.createElement('video');
       video.preload = 'metadata';
       video.src = URL.createObjectURL(file);
-
       video.onloadedmetadata = () => {
         URL.revokeObjectURL(video.src);
         if (video.duration > 30) {
@@ -79,10 +67,7 @@ function UpdatePost() {
           resolve();
         }
       };
-
-      video.onerror = () => {
-        reject(`Failed to load video metadata for ${file.name}.`);
-      };
+      video.onerror = () => reject(`Failed to load video metadata for ${file.name}.`);
     });
   };
 
@@ -90,50 +75,71 @@ function UpdatePost() {
     const files = Array.from(e.target.files);
     const maxFileSize = 50 * 1024 * 1024; // 50MB
     const maxImageCount = 3;
+    let imageCount = existingMedia.filter((url) => !url.endsWith('.mp4')).length + newMedia.filter((file) => file.type.startsWith('image/')).length;
+    let videoCount = existingMedia.filter((url) => url.endsWith('.mp4')).length + newMedia.filter((file) => file.type === 'video/mp4').length;
+    const newPreviews = [...newMediaPreviews];
+    const newFiles = [...newMedia];
 
-    let imageCount = existingMedia.filter((url) => !url.endsWith('.mp4')).length;
-    let videoCount = existingMedia.filter((url) => url.endsWith('.mp4')).length;
-
-    for (const file of files) {
-      if (file.size > maxFileSize) {
-        alert(`File ${file.name} exceeds the maximum size of 50MB.`);
-        return;
-      }
-
-      if (file.type.startsWith('image/')) {
-        imageCount++;
-        if (imageCount > maxImageCount) {
-          alert('You can upload a maximum of 3 images.');
+    const processFile = (file) => {
+      return new Promise((resolve, reject) => {
+        if (file.size > maxFileSize) {
+          reject(`File ${file.name} exceeds the maximum size of 50MB.`);
           return;
         }
-      } else if (file.type === 'video/mp4') {
-        videoCount++;
-        if (videoCount > 1) {
-          alert('You can upload only 1 video.');
-          return;
+        if (file.type.startsWith('image/')) {
+          if (imageCount >= maxImageCount) {
+            reject('You can upload a maximum of 3 images.');
+            return;
+          }
+          imageCount++;
+          resolve({ file, preview: { type: file.type, url: URL.createObjectURL(file) } });
+        } else if (file.type === 'video/mp4') {
+          if (videoCount >= 1) {
+            reject('You can upload only 1 video.');
+            return;
+          }
+          validateVideoDuration(file)
+            .then(() => {
+              videoCount++;
+              resolve({ file, preview: { type: file.type, url: URL.createObjectURL(file) } });
+            })
+            .catch(reject);
+        } else {
+          reject(`Unsupported file type: ${file.type}`);
         }
+      });
+    };
 
-        try {
-          await validateVideoDuration(file);
-        } catch (error) {
-          alert(error);
-          return;
-        }
-      } else {
-        alert(`Unsupported file type: ${file.type}`);
-        return;
-      }
+    try {
+      const results = await Promise.all(files.map(processFile));
+      results.forEach(({ file, preview }) => {
+        newFiles.push(file);
+        newPreviews.push(preview);
+      });
+      setNewMedia(newFiles);
+      setNewMediaPreviews(newPreviews);
+    } catch (error) {
+      alert(error);
+      fileInputRef.current.value = '';
     }
+  };
 
-    setNewMedia(files);
+  const removeNewMedia = (index) => {
+    const updatedMedia = newMedia.filter((_, i) => i !== index);
+    const updatedPreviews = newMediaPreviews.filter((_, i) => i !== index);
+    setNewMedia(updatedMedia);
+    setNewMediaPreviews(updatedPreviews);
+    newMediaPreviews[index].url && URL.revokeObjectURL(newMediaPreviews[index].url);
+    fileInputRef.current.value = '';
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('category', category); // Include category in the update
+    formData.append('category', category);
     newMedia.forEach((file) => formData.append('newMediaFiles', file));
 
     try {
@@ -144,143 +150,194 @@ function UpdatePost() {
       navigate('/allPost');
     } catch (error) {
       console.error('Error updating post:', error);
-      alert('Failed to update post.');
+      alert('Failed to update post: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleVoiceInput = (field, text, isFinal) => {
     if (isFinal) {
-      setTranscribedText(prev => ({ ...prev, [field]: text }));
+      const finalText = text.trim();
+      setTranscribedText((prev) => ({ ...prev, [field]: finalText }));
+      setVoiceHistory((prev) => ({
+        ...prev,
+        [field]: [...prev[field], finalText].slice(-5),
+      }));
       if (field === 'title') {
-        setTitle(prev => prev ? `${prev} ${text}` : text);
-        setInterimText(prev => ({ ...prev, title: '' }));
+        setTitle((prev) => (prev ? `${prev} ${finalText}` : finalText).trim());
       } else if (field === 'description') {
-        setDescription(prev => prev ? `${prev} ${text}` : text);
-        setInterimText(prev => ({ ...prev, description: '' }));
+        setDescription((prev) => (prev ? `${prev} ${finalText}` : finalText).trim());
       }
-      setIsListening(prev => ({ ...prev, [field]: false }));
+      setIsListening((prev) => ({ ...prev, [field]: false }));
+      setInterimText((prev) => ({ ...prev, [field]: '' }));
     } else {
-      setInterimText(prev => ({ ...prev, [field]: text }));
+      setInterimText((prev) => ({ ...prev, [field]: text }));
     }
   };
 
   const startVoiceInput = (field) => {
-    setIsListening(prev => ({ ...prev, [field]: true }));
+    setIsListening((prev) => ({ ...prev, [field]: true }));
+    setInterimText((prev) => ({ ...prev, [field]: '' }));
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Display a loading message while fetching data
+    return (
+      <div className="UPloading-container">
+        <div className="UPloading-spinner"></div>
+        <p>Loading post details...</p>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <div className='continer'>
-        <NavBar/>
-        <div className='continSection'>
-          <div className="from_continer">
-            <p className="Auth_heading">Update Post</p>
-            <form onSubmit={handleSubmit} className='from_data'>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Title</label>
-                <div className="input-with-voice">
-                  <input
-                    className={`Auth_input ${isListening.title ? 'listening' : ''}`}
-                    type="text"
-                    placeholder={isListening.title ? 'Listening...' : 'Title'}
-                    value={isListening.title ? `${title} ${interimText.title}` : title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                  />
-                  <VoiceInput 
-                    onTextUpdate={handleVoiceInput} 
-                    fieldName="title"
-                    isListening={isListening.title}
-                    onStartListening={() => startVoiceInput('title')}
-                  />
-                  {(transcribedText.title || interimText.title) && (
-                    <div className="transcribed-text">
-                      {isListening.title ? 
-                        `Listening: ${interimText.title}` : 
-                        `Last input: ${transcribedText.title}`}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Description</label>
-                <div className="input-with-voice">
-                  <textarea
-                    className={`Auth_input ${isListening.description ? 'listening' : ''}`}
-                    placeholder={isListening.description ? 'Listening...' : 'Description'}
-                    value={isListening.description ? `${description} ${interimText.description}` : description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                    rows={3}
-                  />
-                  <VoiceInput 
-                    onTextUpdate={handleVoiceInput} 
-                    fieldName="description"
-                    isListening={isListening.description}
-                    onStartListening={() => startVoiceInput('description')}
-                  />
-                  {(transcribedText.description || interimText.description) && (
-                    <div className="transcribed-text">
-                      {isListening.description ? 
-                        `Listening: ${interimText.description}` : 
-                        `Last input: ${transcribedText.description}`}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Category</label>
-                <select
-                  className="Auth_input"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+    <div className="UPupdate-post-container">
+      <NavBar />
+      <div className="UPupdate-post-content">
+        <h1 className="UPupdate-post-title">Update Post</h1>
+        <div className="UPform-card">
+          <form onSubmit={handleSubmit} className="UPform">
+            <div className="UPform-group">
+              <label className="UPform-label">Title</label>
+              <div className="UPinput-container">
+                <input
+                  className={`UPform-input ${isListening.title ? 'UPlistening' : ''}`}
+                  type="text"
+                  placeholder={isListening.title ? 'Listening...' : 'Enter title'}
+                  value={isListening.title ? `${title} ${interimText.title}` : title}
+                  onChange={(e) => setTitle(e.target.value)}
                   required
-                >
-                  <option value="" disabled>Select Category</option>
-                  <option value="Tech">Tech</option>
-                  <option value="Programming">Programming</option>
-                  <option value="Cooking">Cooking</option>
-                  <option value="Photography">Photography</option>
-                </select>
+                />
+                <VoiceInput
+                  onTextUpdate={handleVoiceInput}
+                  fieldName="title"
+                  isListening={isListening.title}
+                  onStartListening={() => startVoiceInput('title')}
+                />
+                {(transcribedText.title || interimText.title) && (
+                  <div className={`UPtranscribed-text ${isListening.title ? 'UPlistening' : 'UPcompleted'}`}>
+                    {isListening.title ? `Recording: ${interimText.title}` : `Latest: ${transcribedText.title}`}
+                  </div>
+                )}
+                {voiceHistory.title.length > 0 && (
+                  <div className="UPvoice-history">
+                    <p className="UPvoice-history-title">Voice Input History</p>
+                    {voiceHistory.title.map((text, index) => (
+                      <div key={index} className="UPvoice-history-item">{text}</div>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Media</label>
-                <div className='seket_media'>
+            </div>
+            <div className="UPform-group">
+              <label className="UPform-label">Description</label>
+              <div className="UPinput-container">
+                <textarea
+                  className={`UPform-input ${isListening.description ? 'UPlistening' : ''}`}
+                  placeholder={isListening.description ? 'Listening...' : 'Enter description'}
+                  value={isListening.description ? `${description} ${interimText.description}` : description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                  rows="5"
+                />
+                <VoiceInput
+                  onTextUpdate={handleVoiceInput}
+                  fieldName="description"
+                  isListening={isListening.description}
+                  onStartListening={() => startVoiceInput('description')}
+                />
+                {(transcribedText.description || interimText.description) && (
+                  <div className={`UPtranscribed-text ${isListening.description ? 'UPlistening' : 'UPcompleted'}`}>
+                    {isListening.description ? `Recording: ${interimText.description}` : `Latest: ${transcribedText.description}`}
+                  </div>
+                )}
+                {voiceHistory.description.length > 0 && (
+                  <div className="UPvoice-history">
+                    <p className="UPvoice-history-title">Voice Input History</p>
+                    {voiceHistory.description.map((text, index) => (
+                      <div key={index} className="UPvoice-history-item">{text}</div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="UPform-group">
+              <label className="UPform-label">Category</label>
+              <select
+                className="UPform-input"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+              >
+                <option value="" disabled>Select Category</option>
+                <option value="Tech">Tech</option>
+                <option value="Programming">Programming</option>
+                <option value="Cooking">Cooking</option>
+                <option value="Photography">Photography</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div className="UPform-group">
+              <label className="UPform-label">Media (Max 3 images, 1 video)</label>
+              {(existingMedia.length > 0 || newMediaPreviews.length > 0) && (
+                <div className="UPmedia-preview-grid">
                   {existingMedia.map((mediaUrl, index) => (
-                    <div key={index}>
+                    <div key={`existing-${index}`} className="UPmedia-preview-item">
                       {mediaUrl.endsWith('.mp4') ? (
-                        <video controls className='media_file_se'>
+                        <video className="UPmedia-preview">
                           <source src={`http://localhost:8080${mediaUrl}`} type="video/mp4" />
-                          Your browser does not support the video tag.
                         </video>
                       ) : (
-                        <img className='media_file_se' src={`http://localhost:8080${mediaUrl}`} alt={`Media ${index}`} />
+                        <img
+                          className="UPmedia-preview"
+                          src={`http://localhost:8080${mediaUrl}`}
+                          alt={`Media ${index}`}
+                        />
                       )}
                       <button
-                      className='rem_btn'
+                        type="button"
+                        className="UPremove-media-btn"
                         onClick={() => handleDeleteMedia(mediaUrl)}
-
+                        title="Remove Media"
                       >
-                        X
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  {newMediaPreviews.map((preview, index) => (
+                    <div key={`new-${index}`} className="UPmedia-preview-item">
+                      {preview.type.startsWith('video/') ? (
+                        <video className="UPmedia-preview">
+                          <source src={preview.url} type={preview.type} />
+                        </video>
+                      ) : (
+                        <img className="UPmedia-preview" src={preview.url} alt={`New Media ${index}`} />
+                      )}
+                      <button
+                        type="button"
+                        className="UPremove-media-btn"
+                        onClick={() => removeNewMedia(index)}
+                        title="Remove Media"
+                      >
+                        ×
                       </button>
                     </div>
                   ))}
                 </div>
-                <input
-                  className="Auth_input"
-                  type="file"
-                  accept="image/jpeg,image/png,image/jpg,video/mp4"
-                  multiple
-                  onChange={handleNewMediaChange}
-                />
-              </div>
-              <button type="submit" className="Auth_button">Submit</button>
-            </form>
-          </div>
+              )}
+              <input
+                className="UPfile-input"
+                type="file"
+                accept="image/jpeg,image/png,image/jpg,video/mp4"
+                multiple
+                onChange={handleNewMediaChange}
+                ref={fileInputRef}
+              />
+            </div>
+            <button type="submit" className="UPsubmit-button" disabled={isSubmitting}>
+              {isSubmitting ? 'Updating...' : 'Update Post'}
+            </button>
+          </form>
         </div>
       </div>
     </div>
