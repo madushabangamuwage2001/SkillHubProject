@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './notification.css'
+import './notification.css';  // Change this line to use existing CSS file
 import { RiDeleteBin6Fill } from "react-icons/ri";
-import NavBar from '../../Components/NavBar/NavBar';
 import { MdOutlineMarkChatRead } from "react-icons/md";
+import NavBar from '../../Components/NavBar/NavBar';
+import { FaVideo } from "react-icons/fa";
 
 function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
@@ -13,17 +14,17 @@ function NotificationsPage() {
     const fetchNotifications = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/notifications/${userId}`);
-        console.log('API Response:', response.data); // Debugging log
         setNotifications(response.data);
       } catch (error) {
         console.error('Error fetching notifications:', error);
+        alert('Failed to load notifications.');
       }
     };
 
     if (userId) {
       fetchNotifications();
     } else {
-      console.error('User ID is not available');
+      alert('Please log in to view notifications.');
     }
   }, [userId]);
 
@@ -33,47 +34,92 @@ function NotificationsPage() {
       setNotifications(notifications.map((n) => (n.id === id ? { ...n, read: true } : n)));
     } catch (error) {
       console.error('Error marking notification as read:', error);
+      alert('Failed to mark notification as read.');
     }
   };
 
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:8080/notifications/${id}`);
-      setNotifications(notifications.filter((n) => n.id !== id));
-    } catch (error) {
-      console.error('Error deleting notification:', error);
+    if (window.confirm('Are you sure you want to delete this notification?')) {
+      try {
+        await axios.delete(`http://localhost:8080/notifications/${id}`);
+        setNotifications(notifications.filter((n) => n.id !== id));
+      } catch (error) {
+        console.error('Error deleting notification:', error);
+        alert('Failed to delete notification.');
+      }
     }
   };
 
+  const VideoPreview = ({ videoUrl }) => (
+    <div className="video-preview-wrapper">
+      <video
+        controls
+        className="video-preview"
+        preload="metadata"
+      >
+        <source src={`http://localhost:8080/notifications/videos/${videoUrl}`} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  );
+
   return (
-    <div>
-      <div className='continer'>
-        <NavBar />
-        <div className='continSection'>
-          <div className='post_card_continer'>
-            {notifications.length === 0 ? (
-              <div className='not_found_box'>
-                <div className='not_found_img'></div>
-                <p className='not_found_msg'>No notifications found.</p>
-              </div>
-            ) : (
-              notifications.map((notification) => (
-                <div key={notification.id} className={`post_card ${notification.read ? 'read' : 'unread'}`}>
-                  <div className='continer_set'>
-                    <p className='noty_topic'>{notification.message}</p>
-                    <p className='noty_time'>{new Date(notification.createdAt).toLocaleString()}</p>
+    <div className="notifications-container">
+      <NavBar />
+      <div className="notifications-content">
+        <h1 className="notifications-title">Notifications</h1>
+        <div className="notifications-grid">
+          {notifications.length === 0 ? (
+            <div className="no-notifications">
+              <div className="no-notifications-icon"></div>
+              <p className="no-notifications-message">No notifications found.</p>
+            </div>
+          ) : (
+            notifications.map((notification) => (
+              <div key={notification.id} className={`notification-card ${notification.read ? 'read' : 'unread'}`}>
+                <div className="notification-content">
+                  <div className="notification-header">
+                    <p className="noty-topic">{notification.message}</p>
+                    <p className="noty-time">
+                      {new Date(notification.createdAt).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </p>
                   </div>
-                  <div className='noty_action_btn_con'>
-                    <MdOutlineMarkChatRead onClick={() => handleMarkAsRead(notification.id)}
-                      style={{ display: notification.read ? 'none' : 'inline-block' }} className='action_btn_icon' />
-                    <RiDeleteBin6Fill
-                      onClick={() => handleDelete(notification.id)}
-                      className='action_btn_icon' />
-                  </div>
+                  {notification.imageUrl && (
+                    <img
+                      src={`http://localhost:8080/notifications/images/${notification.imageUrl}`}
+                      alt="Notification"
+                      className="notification-media"
+                    />
+                  )}
+                  {notification.videoUrl && <VideoPreview videoUrl={notification.videoUrl} />}
                 </div>
-              ))
-            )}
-          </div>
+                <div className="noty-action-btn-con">
+                  {!notification.read && (
+                    <button
+                      onClick={() => handleMarkAsRead(notification.id)}
+                      className="action-button mark-read-btn"
+                      title="Mark as Read"
+                    >
+                      <MdOutlineMarkChatRead />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDelete(notification.id)}
+                    className="action-button delete-btn"
+                    title="Delete Notification"
+                  >
+                    <RiDeleteBin6Fill />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

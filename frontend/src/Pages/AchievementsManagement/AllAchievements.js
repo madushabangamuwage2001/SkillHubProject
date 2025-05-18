@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
-import NavBar from '../../Components/NavBar/NavBar'
+import NavBar from '../../Components/NavBar/NavBar';
 import { IoIosCreate } from "react-icons/io";
+import './AllAchievements.css';
 
 function AllAchievements() {
   const [progressData, setProgressData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [searchQuery, setSearchQuery] = useState('');
   const userId = localStorage.getItem('userID');
 
   useEffect(() => {
@@ -15,7 +16,7 @@ function AllAchievements() {
       .then((response) => response.json())
       .then((data) => {
         setProgressData(data);
-        setFilteredData(data); // Initially show all data
+        setFilteredData(data);
       })
       .catch((error) => console.error('Error fetching Achievements data:', error));
   }, []);
@@ -24,7 +25,6 @@ function AllAchievements() {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
 
-    // Filter achievements based on title or description
     const filtered = progressData.filter(
       (achievement) =>
         achievement.title.toLowerCase().includes(query) ||
@@ -34,90 +34,97 @@ function AllAchievements() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this Achievements?')) {
+    if (window.confirm('Are you sure you want to delete this achievement?')) {
       try {
         const response = await fetch(`http://localhost:8080/achievements/${id}`, {
           method: 'DELETE',
         });
         if (response.ok) {
-          alert('Achievements deleted successfully!');
+          alert('Achievement deleted successfully!');
           setFilteredData(filteredData.filter((progress) => progress.id !== id));
         } else {
-          alert('Failed to delete Achievements.');
+          alert('Failed to delete achievement.');
         }
       } catch (error) {
-        console.error('Error deleting Achievements:', error);
+        console.error('Error deleting achievement:', error);
       }
     }
   };
 
   return (
-    <div>
-      <div className='continer'>
-        <NavBar />
-        <div className='continSection'>
-          <div className='searchinput'>
+    <div className="ALAachievements-container">
+      <NavBar />
+      <div className="ALAachievements-content">
+        <div className="ALAachievements-header">
+          <h1 className="ALAachievements-title">Your Achievements</h1>
+          <div className="ALAsearch-container">
             <input
               type="text"
-              className="Auth_input"
-              placeholder="Search achievements by title or description"
+              className="ALAsearch-input"
+              placeholder="Search achievements by title or description..."
               value={searchQuery}
               onChange={handleSearch}
             />
           </div>
-          <div className='add_new_btn' onClick={() => (window.location.href = '/addAchievements')}>
-            <IoIosCreate className='add_new_btn_icon' />
-          </div>
-          <div className='post_card_continer'>
-            {filteredData.length === 0 ? (
-              <div className='not_found_box'>
-                <div className='not_found_img'></div>
-                <p className='not_found_msg'>No posts found. Please create a new post.</p>
-                <button
-                  className='not_found_btn'
-                  onClick={() => (window.location.href = '/addAchievements')}
-                >
-                  Create New Post
-                </button>
-              </div>
-            ) : (
-              filteredData.map((progress) => (
-                <div key={progress.id} className='post_card'>
-                  <div className='user_details_card'>
-                    <div className='name_section_post_achi'>
-                      <p className='name_section_post_owner_name'>{progress.postOwnerName}</p>
-                      <p className='date_card_dte'> {progress.date}</p>
-
-                    </div>
-                    {progress.postOwnerID === userId && (
-                      <div>
-                        <div className='action_btn_icon_post'>
-                          <FaEdit
-                            onClick={() => (window.location.href = `/updateAchievements/${progress.id}`)} className='action_btn_icon' />
-                          <RiDeleteBin6Fill
-                            onClick={() => handleDelete(progress.id)}
-                            className='action_btn_icon' />
-                        </div>
-                      </div>
-                    )}
+        </div>
+        <button
+          className="ALAadd-button"
+          onClick={() => (window.location.href = '/addAchievements')}
+          title="Add New Achievement"
+        >
+          <IoIosCreate className="ALAadd-button-icon" />
+        </button>
+        <div className="ALAachievements-grid">
+          {filteredData.length === 0 ? (
+            <div className="ALAno-achievements">
+              <div className="ALAno-achievements-icon"></div>
+              <p className="ALAno-achievements-message">No achievements found. Create your first achievement!</p>
+              <button
+                className="ALAcreate-button"
+                onClick={() => (window.location.href = '/addAchievements')}
+              >
+                Create New Achievement
+              </button>
+            </div>
+          ) : (
+            filteredData.map((progress) => (
+              <div key={progress.id} className="ALAachievement-card">
+                <div className="ALAcard-header">
+                  <div className="ALAuser-info">
+                    <p className="ALAuser-name">{progress.postOwnerName}</p>
+                    <p className="ALAachievement-date">{progress.date}</p>
                   </div>
-                  <div className='dis_con'>
-                    <p className='topic_cont'>{progress.title}</p>
-                    <p className='dis_con_pera' style={{ whiteSpace: "pre-line" }}>{progress.description}</p>
-
-                    {progress.imageUrl && (
-                      <img
-                        src={`http://localhost:8080/achievements/images/${progress.imageUrl}`}
-                        alt="Achievement"
-                        className='achievement_image'
+                  {progress.postOwnerID === userId && (
+                    <div className="ALAaction-buttons">
+                      <FaEdit
+                        onClick={() => (window.location.href = `/updateAchievements/${progress.id}`)}
+                        className="ALAaction-icon ALAedit-icon"
+                        title="Edit Achievement"
                       />
-                    )}
-                  </div>
-
+                      <RiDeleteBin6Fill
+                        onClick={() => handleDelete(progress.id)}
+                        className="ALAaction-icon ALAdelete-icon"
+                        title="Delete Achievement"
+                      />
+                    </div>
+                  )}
                 </div>
-              ))
-            )}
-          </div>
+                <div className="ALAcard-content">
+                  <h3 className="ALAachievement-title">{progress.title}</h3>
+                  <p className="ALAachievement-description" style={{ whiteSpace: "pre-line" }}>
+                    {progress.description}
+                  </p>
+                  {progress.imageUrl && (
+                    <img
+                      src={`http://localhost:8080/achievements/images/${progress.imageUrl}`}
+                      alt="Achievement"
+                      className="ALAachievement-image"
+                    />
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

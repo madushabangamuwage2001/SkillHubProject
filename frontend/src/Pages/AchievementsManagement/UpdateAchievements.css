@@ -1,0 +1,192 @@
+.UAupdate-achievements-container {
+  min-height: 100vh;
+  background-color: #f7f8fa;
+}
+
+.UAupdate-achievements-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+.UAupdate-achievements-form-card {
+  max-width: 672px;
+  margin: 0 auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.UAupdate-achievements-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  text-align: center;
+  color: #1f2937;
+  margin-bottom: 2rem;
+}
+
+.UAupdate-achievements-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.UAform-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.UAform-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.UAimage-preview {
+  margin-top: 0.5rem;
+}
+
+.UApreview-img {
+  max-height: 16rem;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.UAfile-input {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.UAfile-input::-webkit-file-upload-button {
+  margin-right: 1rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.UAfile-input::-webkit-file-upload-button:hover {
+  background-color: #dbeafe;
+}
+
+.UAinput-container {
+  position: relative;
+}
+
+.UAform-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.UAform-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.UAform-input.UAlistening {
+  border-color: #22c55e;
+  background-color: #f0fdf4;
+}
+
+.UAform-input[type="date"],
+.UAform-input[type="select"] {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
+
+textarea.UAform-input {
+  resize: vertical;
+  min-height: 7.5rem;
+}
+
+.UAtranscribed-text {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.UAtranscribed-text.UAlistening {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.UAtranscribed-text.UAcompleted {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.UAvoice-history {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+}
+
+.UAvoice-history-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.UAvoice-history-item {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.UAsubmit-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.UAsubmit-button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.UAsubmit-button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .UAupdate-achievements-content {
+    padding: 2rem 0.5rem;
+  }
+
+  .UAupdate-achievements-form-card {
+    padding: 1.5rem;
+  }
+
+  .UAupdate-achievements-title {
+    font-size: 1.5rem;
+  }
+}

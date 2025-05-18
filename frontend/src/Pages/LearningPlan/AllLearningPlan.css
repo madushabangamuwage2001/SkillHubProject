@@ -1,0 +1,439 @@
+:root {
+  --dark-gradient: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --container-width: 1344px;
+  --space-16: 4rem;
+  --space-12: 3rem;
+  --space-6: 1.5rem;
+  --font-size-4xl: 2.5rem;
+  --secondary-gradient: linear-gradient(135deg, #3b82f6, #a855f7);
+  --transition-normal: 0.6s ease-out;
+}
+
+.APall-learning-plan-container {
+  min-height: 100vh;
+  background: var(--dark-gradient);
+  font-family: var(--font-main);
+  color: #e2e8f0;
+  position: relative;
+  overflow: hidden;
+}
+
+.APall-learning-plan-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 20%, rgba(59, 130, 246, 0.15), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.APall-learning-plan-content {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: var(--space-16) 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.APall-learning-plan-header {
+  text-align: center;
+  margin-bottom: var(--space-12);
+  animation: fadeInUp var(--transition-normal);
+}
+
+.APall-learning-plan-title {
+  font-size: var(--font-size-4xl);
+  font-weight: 800;
+  background: var(--secondary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: var(--space-6);
+  letter-spacing: -0.025em;
+}
+
+.APsearch-container {
+  max-width: 720px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+}
+
+.APsearch-input {
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.APsearch-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.APsearch-input::placeholder {
+  color: #94a3b8;
+}
+
+.APplans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+.APplan-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.APplan-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.APtemplate {
+  padding: 1.75rem;
+}
+
+.APtemplate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.APuser-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.APuser-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.APtemplate-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 1rem 0 0.75rem;
+}
+
+.APtemplate-dates {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-bottom: 0.75rem;
+}
+
+.APtemplate-dates svg {
+  font-size: 1.25rem;
+}
+
+.APtemplate-category {
+  display: inline-block;
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.APtemplate-divider {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 1rem 0;
+}
+
+.APtemplate-description {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0.75rem 0;
+}
+
+.APtemplate-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.APtemplate-tag {
+  background: rgba(255, 255, 255, 0.1);
+  color: #3b82f6;
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.APtemplate-tag:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: translateY(-2px);
+}
+
+.APtemplate-media {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: block;
+}
+
+.APtemplate-media-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.APtemplate-media-split-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.APplan-video {
+  width: 100%;
+  max-height: 200px;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.APadd-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  background: #3b82f6;
+  border: none;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  font-size: 1.5rem;
+}
+
+.APadd-button:hover {
+  background: #2563eb;
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.APaction-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.APaction-icon {
+  font-size: 1.5rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.APedit-icon {
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.1);
+}
+
+.APdelete-icon {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.APedit-icon:hover {
+  background: rgba(96, 165, 250, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+}
+
+.APdelete-icon:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.APcreate-button {
+  padding: 1rem 2rem;
+  min-width: 100px;
+  background: var(--primary-gradient);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-lg);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.APcreate-button:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  filter: brightness(110%);
+}
+
+.APno-plans {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeIn 0.6s ease-out;
+}
+
+.APno-plans-icon {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto;
+  background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="%2394a3b8"%3E%3Cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /%3E%3C/svg%3E') no-repeat center;
+  background-size: contain;
+}
+
+.APno-plans-message {
+  margin: 1.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.APcreate-button {
+  padding: 0.75rem 1.5rem;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.APcreate-button:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.APloading-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.APloading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .APall-learning-plan-content {
+    padding: 2.5rem 1rem;
+  }
+
+  .APall-learning-plan-title {
+    font-size: 2rem;
+  }
+
+  .APplans-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .APtemplate-media-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .APall-learning-plan-content {
+    padding: 2rem 0.75rem;
+  }
+
+  .APall-learning-plan-title {
+    font-size: 1.75rem;
+  }
+
+  .APno-plans {
+    padding: 2.5rem;
+  }
+
+  .APno-plans-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .APadd-button {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.25rem;
+  }
+}
