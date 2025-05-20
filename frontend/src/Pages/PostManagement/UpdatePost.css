@@ -1,6 +1,6 @@
 .UPupdate-post-container {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f9fafb 0%, #e5e7eb 100%);
+  background: var(--dark-gradient);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -15,8 +15,12 @@
   font-weight: 800;
   color: #111827;
   text-align: center;
+  margin-top: 115px;
   margin-bottom: 3rem;
   letter-spacing: -0.025em;
+  background: linear-gradient(to right, purple, pink, white);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .UPform-card {
