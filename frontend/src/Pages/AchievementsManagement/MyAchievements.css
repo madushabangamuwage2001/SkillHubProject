@@ -1,0 +1,209 @@
+.MYAmy-achievements-container {
+  min-height: 100vh;
+  background-color: #f7f8fa;
+  
+}
+
+.MYAmy-achievements-content {
+  max-width: 1279px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+  
+}
+
+.MYAmy-achievements-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 2rem;
+  margin-top: 149px;
+}
+
+.MYAadd-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s;
+  z-index: 1000;
+}
+
+.MYAadd-button:hover {
+  background-color: #2563eb;
+  transform: scale(1.1);
+}
+
+.MYAadd-button-icon {
+  color: white;
+  font-size: 1.75rem;
+}
+
+.MYAachievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  padding: 0 1rem;
+}
+
+.MYAachievement-card {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s;
+}
+
+.MYAachievement-card:hover {
+  transform: translateY(-4px);
+}
+
+.MYAcard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.MYAuser-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.MYAuser-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.MYAachievement-date {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.MYAaction-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.MYAaction-icon {
+  font-size: 1.25rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.MYAedit-icon:hover {
+  color: #3b82f6;
+}
+
+.MYAdelete-icon:hover {
+  color: #ef4444;
+}
+
+.MYAcard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.MYAachievement-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.MYAachievement-description {
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.MYAachievement-image {
+  width: 100%;
+  max-height: 16rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.MYAno-achievements {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.MYAno-achievements-icon {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto;
+  background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24%2024" stroke="%236b7280"%3E%3Cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /%3E%3C/svg%3E') no-repeat center;
+}
+
+.MYAno-achievements-message {
+  margin: 1.5rem 0;
+  font-size: 1.125rem;
+  color: #4b5563;
+}
+
+.MYAcreate-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.MYAcreate-button:hover {
+  background-color: #2563eb;
+}
+
+@media (max-width: 640px) {
+  .MYAmy-achievements-content {
+    padding: 2rem 0.5rem;
+  }
+
+  .MYAmy-achievements-title {
+    font-size: 1.5rem;
+  }
+
+  .MYAachievements-grid {
+    grid-template-columns: 1fr;
+    padding: 0 0.5rem;
+  }
+
+  .MYAachievement-card {
+    padding: 1rem;
+  }
+
+  .MYAadd-button {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .MYAadd-button-icon {
+    font-size: 1.5rem;
+  }
+}
