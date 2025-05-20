@@ -281,7 +281,7 @@ body {
 
 .ANPpost-card {
   
-  background: var(--surface-dark);
+  background: white;
   backdrop-filter: blur(8px);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -345,6 +345,7 @@ body {
   font-size: var(--font-size-sm);
   font-weight: 600;
   color: var(--text-dark);
+  color: #121212;
 }
 
 [data-theme="light"] .ANPuser-name {
@@ -414,6 +415,7 @@ body {
   color: var(--text-dark);
   margin-bottom: var(--space-2);
   line-height: 1.4;
+  color: black;
 }
 
 [data-theme="light"] .ANPpost-title {
