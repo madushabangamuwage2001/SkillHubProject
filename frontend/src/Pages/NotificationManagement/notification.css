@@ -133,6 +133,7 @@
   border-radius: 0.75rem;
   color: #94a3b8;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .mark-read-btn:hover {
@@ -141,11 +142,21 @@
   transform: scale(1.1);
 }
 
+
 .delete-btn:hover {
   background: rgba(239, 68, 68, 0.2);
   color: #ef4444;
   transform: scale(1.1);
 }
+.noty-action-btn-con {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  gap: 10px;
+  z-index: 2;
+  position: relative;
+}
+
 
 @keyframes slideIn {
   from {
