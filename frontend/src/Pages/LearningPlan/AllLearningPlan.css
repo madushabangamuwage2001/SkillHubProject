@@ -1,22 +1,156 @@
 :root {
+  /* Colors */
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --secondary: #8b5cf6;
+  --accent: #f59e0b;
+  --success: #22c55e;
+  --error: #ef4444;
+  --background-light: #ffffff;
+  --background-dark: #121212;
+  --surface-light: #f8fafc;
+  --surface-dark: rgba(255, 255, 255, 0.05);
+  --text-light: #1f2937;
+  --text-dark: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --border: rgba(255, 255, 255, 0.1);
   --dark-gradient: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --container-width: 1344px;
-  --space-16: 4rem;
-  --space-12: 3rem;
-  --space-6: 1.5rem;
-  --font-size-4xl: 2.5rem;
   --secondary-gradient: linear-gradient(135deg, #3b82f6, #a855f7);
-  --transition-normal: 0.6s ease-out;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+  /* Typography */
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.6s ease-out;
+
+  /* Layout */
+  --container-width: 1344px;
+}
+
+/* Global Reset & Base Styles */
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  background: var(--background-dark);
+  color: var(--text-dark);
+}
+
+[data-theme="light"] body {
+  background: var(--background-light);
+  color: var(--text-light);
+}
+
+/* Common Components */
+.APglass-card {
+  background: var(--surface-dark);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+[data-theme="light"] .APglass-card {
+  background: var(--surface-light);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.APglass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-md);
+}
+
+.APbutton-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.APbutton-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.APinput-field {
+  background: var(--surface-dark);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-dark);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+[data-theme="light"] .APinput-field {
+  background: var(--surface-light);
+  color: var(--text-light);
+}
+
+.APinput-field:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Animations */
+@keyframes APfadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes APfadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .APall-learning-plan-container {
   min-height: 100vh;
   background: var(--dark-gradient);
   font-family: var(--font-main);
-  color: #e2e8f0;
+  color: var(--text-dark);
   position: relative;
   overflow: hidden;
+}
+
+[data-theme="light"] .APall-learning-plan-container {
+  background: var(--background-light);
 }
 
 .APall-learning-plan-container::before {
@@ -31,18 +165,23 @@
   z-index: 0;
 }
 
+[data-theme="light"] .APall-learning-plan-container::before {
+  background: radial-gradient(circle at 50% 20%, rgba(59, 130, 246, 0.1), transparent 60%);
+}
+
 .APall-learning-plan-content {
   max-width: var(--container-width);
-  margin: 0 auto;
-  padding: var(--space-16) 1.5rem;
+  margin: 100px auto;
+  padding: var(--space-16) var(--space-3);
   position: relative;
   z-index: 1;
+  
 }
 
 .APall-learning-plan-header {
   text-align: center;
   margin-bottom: var(--space-12);
-  animation: fadeInUp var(--transition-normal);
+  animation: APfadeInUp var(--transition-slow);
 }
 
 .APall-learning-plan-title {
@@ -55,144 +194,175 @@
   letter-spacing: -0.025em;
 }
 
+
 .APsearch-container {
   max-width: 720px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-dark);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
-  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+}
+
+[data-theme="light"] .APsearch-container {
+  background: var(--surface-light);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .APsearch-input {
   width: 100%;
-  padding: 0.875rem 1.25rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  color: #ffffff;
-  transition: all 0.3s ease;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-dark);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  color: var(--text-dark);
+  transition: all var(--transition-fast);
+}
+
+[data-theme="light"] .APsearch-input {
+  background: var(--surface-light);
+  color: var(--text-light);
 }
 
 .APsearch-input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
   background: rgba(255, 255, 255, 0.15);
 }
 
 .APsearch-input::placeholder {
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .APplans-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 2rem;
-  padding: 2rem 0;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-6);
+  padding: var(--space-8) 0;
 }
 
 .APplan-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-dark);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: all 0.4s ease;
-  animation: fadeInUp 0.6s ease-out;
+  transition: all var(--transition-normal);
+  animation: APfadeInUp var(--transition-slow);
+}
+
+[data-theme="light"] .APplan-card {
+  background: var(--surface-light);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .APplan-card:hover {
   transform: translateY(-8px);
   background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
 .APtemplate {
-  padding: 1.75rem;
+  padding: var(--space-4);
 }
 
 .APtemplate-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-4);
 }
 
 .APuser-info {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-2);
 }
 
 .APuser-name {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
-  color: #ffffff;
-  margin: 0;
+  color: var(--text-dark);
+}
+
+[data-theme="light"] .APuser-name {
+  color: var(--text-light);
 }
 
 .APtemplate-title {
-  font-size: 1.375rem;
+  font-size: var(--font-size-lg);
   font-weight: 700;
-  color: #ffffff;
-  margin: 1rem 0 0.75rem;
+  color: var(--text-dark);
+  margin: var(--space-3) 0 var(--space-2);
+}
+
+[data-theme="light"] .APtemplate-title {
+  color: var(--text-light);
 }
 
 .APtemplate-dates {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #94a3b8;
-  margin-bottom: 0.75rem;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
 }
 
 .APtemplate-dates svg {
-  font-size: 1.25rem;
+  font-size: var(--font-size-sm);
 }
 
 .APtemplate-category {
   display: inline-block;
   background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
-  font-size: 0.875rem;
+  color: var(--primary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
   font-weight: 500;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--space-2);
 }
 
 .APtemplate-divider {
   border: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  margin: 1rem 0;
+  border-top: 1px solid var(--border);
+  margin: var(--space-3) 0;
+}
+
+[data-theme="light"] .APtemplate-divider {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .APtemplate-description {
-  font-size: 0.875rem;
-  color: #94a3b8;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
   line-height: 1.6;
-  margin: 0.75rem 0;
+  margin: var(--space-2) 0;
 }
 
 .APtemplate-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 1rem 0;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
 }
 
 .APtemplate-tag {
-  background: rgba(255, 255, 255, 0.1);
-  color: #3b82f6;
-  padding: 0.35rem 0.75rem;
-  border-radius: 0.75rem;
-  font-size: 0.75rem;
+  background: var(--surface-dark);
+  color: var(--primary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all var(--transition-fast);
+}
+
+[data-theme="light"] .APtemplate-tag {
+  background: var(--surface-light);
 }
 
 .APtemplate-tag:hover {
@@ -204,159 +374,150 @@
   width: 100%;
   max-height: 200px;
   object-fit: cover;
-  border-radius: 0.75rem;
-  margin: 1rem 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  margin: var(--space-3) 0;
+  border: 1px solid var(--border);
   display: block;
+  loading: lazy;
+}
+
+[data-theme="light"] .APtemplate-media {
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .APtemplate-media-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin: 1rem 0;
+  gap: var(--space-3);
+  margin: var(--space-3) 0;
 }
 
 .APtemplate-media-split-item {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-3);
 }
 
 .APplan-video {
   width: 100%;
   max-height: 200px;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+[data-theme="light"] .APplan-video {
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .APadd-button {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 3.5rem;
-  height: 3.5rem;
-  background: #3b82f6;
+  bottom: var(--space-4);
+  right: var(--space-4);
+  width: 3rem;
+  height: 3rem;
+  background: var(--primary);
   border: none;
-  border-radius: 50%;
-  color: #ffffff;
+  border-radius: var(--radius-full);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  font-size: 1.5rem;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-lg);
+  z-index: 1000;
 }
 
 .APadd-button:hover {
-  background: #2563eb;
+  background: var(--primary-dark);
   transform: scale(1.1) rotate(90deg);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md);
 }
 
 .APaction-buttons {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-2);
 }
 
 .APaction-icon {
-  font-size: 1.5rem;
-  padding: 0.75rem;
-  border-radius: var(--radius-lg);
+  font-size: var(--font-size-md);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all var(--transition-normal);
-  width: 3.5rem;
-  height: 3.5rem;
+  transition: all var(--transition-fast);
+  width: 2.5rem;
+  height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .APedit-icon {
-  color: #60a5fa;
-  background: rgba(96, 165, 250, 0.1);
+  color: var(--primary);
+  background: rgba(59, 130, 246, 0.1);
 }
 
 .APdelete-icon {
-  color: #ef4444;
+  color: var(--error);
   background: rgba(239, 68, 68, 0.1);
 }
 
 .APedit-icon:hover {
-  background: rgba(96, 165, 250, 0.2);
+  background: rgba(59, 130, 246, 0.2);
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
 }
 
 .APdelete-icon:hover {
   background: rgba(239, 68, 68, 0.2);
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-}
-
-.APcreate-button {
-  padding: 1rem 2rem;
-  min-width: 100px;
-  background: var(--primary-gradient);
-  color: #ffffff;
-  border: none;
-  border-radius: var(--radius-lg);
-  font-size: 1.125rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  box-shadow: var(--shadow-lg);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.APcreate-button:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
-  filter: brightness(110%);
 }
 
 .APno-plans {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 4rem;
-  background: rgba(255, 255, 255, 0.05);
+  padding: var(--space-8);
+  background: var(--surface-dark);
   backdrop-filter: blur(12px);
-  border-radius: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  animation: fadeIn 0.6s ease-out;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  animation: APfadeIn var(--transition-slow);
+}
+
+[data-theme="light"] .APno-plans {
+  background: var(--surface-light);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .APno-plans-icon {
-  width: 4rem;
-  height: 4rem;
-  margin: 0 auto;
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto var(--space-3);
   background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="%2394a3b8"%3E%3Cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /%3E%3C/svg%3E') no-repeat center;
   background-size: contain;
 }
 
 .APno-plans-message {
-  margin: 1.5rem 0;
-  font-size: 1.125rem;
+  margin: var(--space-3) 0;
+  font-size: var(--font-size-md);
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .APcreate-button {
-  padding: 0.75rem 1.5rem;
-  background: #3b82f6;
-  color: #ffffff;
+  padding: var(--space-2) var(--space-4);
+  background: var(--primary);
+  color: white;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-fast);
 }
 
 .APcreate-button:hover {
-  background: #2563eb;
+  background: var(--primary-dark);
   transform: translateY(-2px);
 }
 
@@ -366,42 +527,120 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #0f172a;
-  color: #e2e8f0;
+  background: var(--background-dark);
+  color: var(--text-dark);
+}
+
+[data-theme="light"] .APloading-container {
+  background: var(--background-light);
+  color: var(--text-light);
 }
 
 .APloading-spinner {
-  width: 3rem;
-  height: 3rem;
-  border: 4px solid rgba(255, 255, 255, 0.2);
-  border-top: 4px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top: 3px solid var(--primary);
+  border-radius: var(--radius-full);
+  animation: APspin 1s linear infinite;
+  margin-bottom: var(--space-2);
 }
 
-@keyframes spin {
+.APbottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface-dark);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: var(--space-2) 0;
+  z-index: 1000;
+}
+
+[data-theme="light"] .APbottom-nav {
+  background: var(--surface-light);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.APbottom-nav button {
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+[data-theme="light"] .APbottom-nav button {
+  color: var(--text-light);
+}
+
+.APbottom-nav button:hover {
+  color: var(--primary);
+}
+
+.APstories-bar {
+  display: flex;
+  overflow-x: auto;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-3);
+  scrollbar-width: none;
+}
+
+.APstories-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.APstory-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.APstory-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--primary);
+  object-fit: cover;
+}
+
+.APstory-username {
+  font-size: var(--font-size-xs);
+  color: var(--text-dark);
+  margin-top: var(--space-1);
+}
+
+[data-theme="light"] .APstory-username {
+  color: var(--text-light);
+}
+
+.skeleton {
+  background: var(--surface-dark);
+  border-radius: var(--radius-sm);
+}
+
+[data-theme="light"] .skeleton {
+  background: var(--surface-light);
+}
+
+@keyframes APspin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 @media (max-width: 768px) {
   .APall-learning-plan-content {
-    padding: 2.5rem 1rem;
+    padding: var(--space-8) var(--space-2);
   }
 
   .APall-learning-plan-title {
-    font-size: 2rem;
+    font-size: var(--font-size-2xl);
   }
 
   .APplans-grid {
@@ -415,25 +654,31 @@
 
 @media (max-width: 640px) {
   .APall-learning-plan-content {
-    padding: 2rem 0.75rem;
+    padding: var(--space-6) var(--space-1);
   }
 
   .APall-learning-plan-title {
-    font-size: 1.75rem;
+    font-size: var(--font-size-xl);
   }
 
   .APno-plans {
-    padding: 2.5rem;
+    padding: var(--space-6);
   }
 
   .APno-plans-icon {
-    width: 3rem;
-    height: 3rem;
+    width: 2.5rem;
+    height: 2.5rem;
   }
 
   .APadd-button {
-    width: 3rem;
-    height: 3rem;
-    font-size: 1.25rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: var(--font-size-md);
+  }
+}
+
+@media (min-width: 768px) {
+  .APbottom-nav {
+    display: none;
   }
 }

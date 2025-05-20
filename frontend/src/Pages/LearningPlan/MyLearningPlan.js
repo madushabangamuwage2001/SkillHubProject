@@ -66,12 +66,11 @@ function MyLearningPlan() {
     <div className="MLPvideo-container">
       <video 
         controls
-        controlsList="nodownload"
-        preload="metadata"
+    
         className="MLPpost-video"
       >
-        <source src={`http://localhost:8080/learningPlan/videos/${videoUrl}`} type="video/mp4" />
-        <source src={`http://localhost:8080/learningPlan/videos/${videoUrl}`} type="video/webm" />
+        <source src={`http://localhost:8080/learningPlan/planVideos/${videoUrl}`} type="video/mp4" />
+        
         Your browser does not support the video tag.
       </video>
     </div>

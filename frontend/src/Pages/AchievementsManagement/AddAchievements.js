@@ -80,7 +80,7 @@ function AddAchievements() {
       if (image) {
         const imageFormData = new FormData();
         imageFormData.append('file', image);
-        const uploadResponse = await fetch(`${process.env.REACT_APP_API_URL}/achievements/upload`, {
+        const uploadResponse = await fetch(`http://localhost:8080/achievements/upload`, {
           method: 'POST',
           body: imageFormData,
         });
@@ -88,7 +88,7 @@ function AddAchievements() {
         imageUrl = await uploadResponse.text();
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/achievements`, {
+      const response = await fetch(`http://localhost:8080/achievements`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, imageUrl }),

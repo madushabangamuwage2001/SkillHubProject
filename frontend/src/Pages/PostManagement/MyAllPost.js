@@ -285,12 +285,7 @@ function MyAllPost() {
               value={searchQuery}
               onChange={handleSearch}
             />
-            <button
-              className={`MAPtoggle-my-posts-btn ${showMyPosts ? 'MAPactive' : ''}`}
-              onClick={handleMyPostsToggle}
-            >
-              {showMyPosts ? 'All Posts' : 'My Posts'}
-            </button>
+            
           </div>
         </div>
         <button

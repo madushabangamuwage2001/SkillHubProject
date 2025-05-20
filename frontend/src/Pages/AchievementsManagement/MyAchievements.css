@@ -1,12 +1,14 @@
 .MYAmy-achievements-container {
   min-height: 100vh;
   background-color: #f7f8fa;
+  
 }
 
 .MYAmy-achievements-content {
   max-width: 1280px;
   margin: 0 auto;
   padding: 3rem 1rem;
+  
 }
 
 .MYAmy-achievements-title {
@@ -15,6 +17,7 @@
   color: #1f2937;
   text-align: center;
   margin-bottom: 2rem;
+  margin-top: 150px;
 }
 
 .MYAadd-button {
