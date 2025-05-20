@@ -3,6 +3,7 @@
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   font-family: var(--font-main);
   position: relative;
+  
 }
 
 .notifications-container::before {
@@ -20,6 +21,7 @@
   padding: 4rem 1.5rem;
   position: relative;
   z-index: 1;
+  
 }
 
 .notifications-title {
@@ -31,6 +33,33 @@
   text-align: center;
   margin-bottom: 3rem;
   animation: fadeIn 0.6s ease-out;
+  margin-top: 150px;
+}
+
+.notifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.refresh-button {
+  padding: 8px 16px;
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.refresh-button:hover {
+  background-color: #3367d6;
+}
+
+.refresh-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 .notifications-grid {

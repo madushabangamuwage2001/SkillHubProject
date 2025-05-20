@@ -46,15 +46,26 @@
   font-size: 35px;
   color:white;
   cursor: pointer;
+  position: relative;
+  
 }
 .nav_item_icon_noty {
   font-size: 35px;
   color: white;
   cursor: pointer;
+  position: relative;
+  margin-right: 350px;
 }
 .nav_item_icon_noty:hover {
   color: #ff715b;
 }
+
+
+
+
+
+
+
 .nav_bar_item {
   display: flex;
   align-items: center;
