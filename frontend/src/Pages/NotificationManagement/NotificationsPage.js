@@ -4,7 +4,6 @@ import './notification.css';
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { MdOutlineMarkChatRead } from "react-icons/md";
 import NavBar from '../../Components/NavBar/NavBar';
-import { FaVideo } from "react-icons/fa";
 
 function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
@@ -39,7 +38,7 @@ function NotificationsPage() {
   const handleMarkAsRead = async (id) => {
     try {
       await axios.put(`http://localhost:8080/notifications/${id}/markAsRead`);
-      setNotifications(notifications.map((n) => (n.id === id ? { ...n, read: true } : n)));
+      setNotifications(notifications.map(n => (n.id === id ? { ...n, read: true } : n)));
     } catch (error) {
       console.error('Error marking notification as read:', error);
       alert('Failed to mark notification as read.');
@@ -50,13 +49,8 @@ function NotificationsPage() {
     try {
       setDeletingIds(prev => [...prev, id]);
       await axios.delete(`http://localhost:8080/notifications/${id}`);
-      
-      // Update local state immediately
       setNotifications(prev => prev.filter(notification => notification.id !== id));
-      
-      // Show success message
       alert('Notification deleted successfully');
-      
     } catch (error) {
       console.error('Failed to delete notification:', error);
       alert('Failed to delete notification. Please try again.');
@@ -71,11 +65,7 @@ function NotificationsPage() {
 
   const VideoPreview = ({ videoUrl }) => (
     <div className="video-preview-wrapper">
-      <video
-        controls
-        className="video-preview"
-        preload="metadata"
-      >
+      <video controls className="video-preview" preload="metadata">
         <source src={`http://localhost:8080/notifications/videos/${videoUrl}`} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
@@ -88,8 +78,9 @@ function NotificationsPage() {
       <div className="notifications-content">
         <div className="notifications-header">
           <h1 className="notifications-title">Notifications</h1>
-          <button 
-            onClick={handleRefresh} 
+          <button
+            type="button"
+            onClick={handleRefresh}
             className="refresh-button"
             disabled={loading}
           >
@@ -104,11 +95,10 @@ function NotificationsPage() {
           <div className="notifications-grid">
             {notifications.length === 0 ? (
               <div className="no-notifications">
-                <div className="no-notifications-icon"></div>
                 <p className="no-notifications-message">No notifications found.</p>
               </div>
             ) : (
-              notifications.map((notification) => (
+              notifications.map(notification => (
                 <div key={notification.id} className={`notification-card ${notification.read ? 'read' : 'unread'}`}>
                   <div className="notification-content">
                     <div className="notification-header">
@@ -135,6 +125,7 @@ function NotificationsPage() {
                   <div className="noty-action-btn-con">
                     {!notification.read && (
                       <button
+                        type="button"
                         onClick={() => handleMarkAsRead(notification.id)}
                         className="action-button mark-read-btn"
                         title="Mark as Read"
@@ -142,14 +133,14 @@ function NotificationsPage() {
                         <MdOutlineMarkChatRead />
                       </button>
                     )}
-                    <button 
+                    <button
+                      type="button"
                       onClick={() => handleDelete(notification.id)}
                       className="action-button delete-btn"
                       title="Delete Notification"
                       disabled={deletingIds.includes(notification.id)}
                     >
-                      {deletingIds.includes(notification.id) ? 
-                        "Deleting..." : <RiDeleteBin6Fill />}
+                      {deletingIds.includes(notification.id) ? 'Deleting...' : <RiDeleteBin6Fill />}
                     </button>
                   </div>
                 </div>
