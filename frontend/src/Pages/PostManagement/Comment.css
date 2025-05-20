@@ -1,0 +1,253 @@
+
+/* Comment Section Styling */
+.ANPcomment-section {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f0f2f5; /* Light gray background */
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+}
+
+/* Add Comment Input Area */
+.ANPadd-comment {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  padding: 8px;
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.ANPcomment-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  background: transparent;
+  outline: none;
+}
+
+.ANPcomment-input:focus {
+  outline: none;
+}
+
+.ANPsend-comment-btn {
+  background: none;
+  color: #1877f2; /* Primary blue */
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.ANPsend-comment-btn:hover {
+  background: #e4e6eb;
+}
+
+/* Comment Item */
+.ANPcomment {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px 0;
+  gap: 8px;
+}
+
+.ANPcomment-content {
+  flex: 1;
+  background: #fff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.ANPcomment-content:hover .ANPcomment-actions {
+  opacity: 1; /* Show actions on hover */
+}
+
+.ANPcomment-username {
+  font-weight: 600;
+  font-size: 13px;
+  color: #1c1e21;
+  margin-bottom: 2px;
+}
+
+.ANPcomment-text {
+  margin: 0;
+  font-size: 14px;
+  color: #1c1e21;
+  line-height: 1.4;
+}
+
+.ANPcomment-reply-btn {
+  background: none;
+  border: none;
+  color: #65676b;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 0;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.ANPcomment-reply-btn:hover {
+  color: #1877f2;
+  text-decoration: none;
+}
+
+/* Comment Actions (Edit, Delete) */
+.ANPcomment-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  opacity: 0; /* Hidden by default */
+  transition: opacity 0.2s ease;
+}
+
+.ANPcomment-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.ANPcomment-action-btn.ANPedit {
+  color: #2e7d32; /* Professional green for edit */
+}
+
+.ANPcomment-action-btn.ANPedit:hover {
+  background: #e8f5e9;
+  transform: scale(1.1);
+}
+
+.ANPcomment-action-btn.ANPsave {
+  color: #1877f2; /* Primary blue for save */
+}
+
+.ANPcomment-action-btn.ANPsave:hover {
+  background: #e3f2fd;
+  transform: scale(1.1);
+}
+
+.ANPcomment-action-btn.ANPcancel {
+  color: #616161; /* Neutral gray for cancel */
+}
+
+.ANPcomment-action-btn.ANPcancel:hover {
+  background: #e4e6eb;
+  transform: scale(1.1);
+}
+
+.ANPcomment-action-btn.ANPdelete {
+  color: #d32f2f; /* Professional red for delete */
+}
+
+.ANPcomment-action-btn.ANPdelete:hover {
+  background: #ffebee;
+  transform: scale(1.1);
+}
+
+/* Edit Comment Container */
+.ANPedit-comment-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ANPedit-comment-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccd0d5;
+  border-radius: 12px;
+  font-size: 14px;
+  background: #fff;
+  outline: none;
+}
+
+.ANPedit-comment-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+/* Dark Theme Support */
+[data-theme='dark'] .ANPcomment-section {
+  background: #242526;
+}
+
+[data-theme='dark'] .ANPadd-comment {
+  background: #3a3b3c;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .ANPcomment-input,
+[data-theme='dark'] .ANPedit-comment-input {
+  background: transparent;
+  color: #e4e6eb;
+  border-color: #4e4f50;
+}
+
+[data-theme='dark'] .ANPcomment-content {
+  background: #3a3b3c;
+  color: #e4e6eb;
+}
+
+[data-theme='dark'] .ANPcomment-username {
+  color: #e4e6eb;
+}
+
+[data-theme='dark'] .ANPcomment-text {
+  color: #e4e6eb;
+}
+
+[data-theme='dark'] .ANPcomment-reply-btn {
+  color: #b0b3b8;
+}
+
+[data-theme='dark'] .ANPcomment-reply-btn:hover {
+  color: #1877f2;
+}
+
+[data-theme='dark'] .ANPcomment-action-btn.ANPedit {
+  color: #4caf50;
+}
+
+[data-theme='dark'] .ANPcomment-action-btn.ANPedit:hover {
+  background: #2e7d32;
+}
+
+[data-theme='dark'] .ANPcomment-action-btn.ANPsave {
+  color: #42a5f5;
+}
+
+[data-theme='dark'] .ANPcomment-action-btn.ANPsave:hover {
+  background: #1e88e5;
+}
+
+[data-theme='dark'] .ANPcomment-action-btn.ANPcancel {
+  color: #b0b3b8;
+}
+
+[data-theme='dark'] .ANPcomment-action-btn.ANPcancel:hover {
+  background: #4e4f50;
+}
+
+[data-theme='dark'] .ANPcomment-action-btn.ANPdelete {
+  color: #ef5350;
+}
+
+[data-theme='dark'] .ANPcomment-action-btn.ANPdelete:hover {
+  background: #d32f2f;
+}

@@ -1,0 +1,181 @@
+.ADAachievements-container {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+}
+
+.ADAachievements-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+.ADAachievements-form-card {
+  max-width: 671px;
+  margin: 0 auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.ADAachievements-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  text-align: center;
+  color: #1f2937;
+  margin-bottom: 2rem;
+}
+
+.ADAachievements-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ADAform-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ADAform-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.ADAform-help {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.ADAerror-message {
+  padding: 0.75rem;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+.ADAimage-preview {
+  margin-top: 0.5rem;
+}
+
+.ADApreview-img {
+  max-height: 16rem;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.ADAfile-input {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.ADAfile-input::-webkit-file-upload-button {
+  margin-right: 1rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.ADAfile-input::-webkit-file-upload-button:hover {
+  background-color: #dbeafe;
+}
+
+.ADAfile-input:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.ADAinput-container {
+  position: relative;
+}
+
+.ADAform-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.ADAform-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.ADAform-input.ADAlistening {
+  border-color: #22c55e;
+  background-color: #f0fdf4;
+}
+
+.ADAform-input[type="date"],
+.ADAform-input[type="select"] {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
+
+textarea.ADAform-input {
+  resize: vertical;
+  min-height: 7.5rem;
+}
+
+.ADAtranscribed-text {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f9fafb;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.ADAsubmit-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.ADAsubmit-button:hover {
+  background-color: #1d4ed8;
+}
+
+.ADAsubmit-button:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+@media (max by: 640px) {
+  .ADAachievements-content {
+    padding: 2rem 0.5rem;
+  }
+
+  .ADAachievements-form-card {
+    padding: 1.5rem;
+  }
+
+  .ADAachievements-title {
+    font-size: 1.5rem;
+  }
+}

@@ -6,6 +6,7 @@ import { IoLogOut } from "react-icons/io5";
 import axios from 'axios';
 import './NavBar.css';
 import Pro from './img/img.png';
+import Logo from './img/logocover.png'; // Import the logo
 import { fetchUserDetails } from '../../Pages/UserManagement/UserProfile';
 
 function NavBar() {
@@ -67,14 +68,16 @@ function NavBar() {
         <div className={`navbar ${isVisible ? 'navbar_visible' : 'navbar_hidden'}`}>
             <div className="nav_con">
                 <div className='nav_item_set'>
-                    <div className='side_logoo'></div>
+                    <div className='side_logoo'>
+                        <img src={Logo}  alt='SkillHub Logo' className="nav_logo" />
+                    </div>
                     <div className='nav_bar_item'>
 
                         <p
                             className={`nav_nav_item ${currentPath === '/allPost' ? 'nav_nav_item_active' : ''}`}
                             onClick={() => (window.location.href = '/allPost')}
                         >
-                            Skill Post
+                            Post
                         </p>
                         <p
                             className={`nav_nav_item ${currentPath === '/allLearningPlan' ? 'nav_nav_item_active' : ''}`}
@@ -94,6 +97,7 @@ function NavBar() {
                                 onClick={() => (window.location.href = '/notifications')} />
                         ) : (
                             <MdNotificationsActive className='nav_item_icon_noty' onClick={() => (window.location.href = '/notifications')} />
+                            
                         )}
                         <IoLogOut
                             className='nav_item_icon'
@@ -121,8 +125,8 @@ function NavBar() {
                             <img
                                 src={userProfileImage}
                                 alt="User Profile"
-                                className="nav_item_icon"
-                                style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                                className="nav_item_icon_p"
+                                style={{ width: '40px', height: '40px', borderRadius: '50%',  }}
                                 onError={(e) => {
                                     e.target.onerror = null;
                                     e.target.src = Pro;
@@ -133,7 +137,7 @@ function NavBar() {
                             />
                         ) : (
                             <FaUserGraduate
-                                className='nav_item_icon'
+                                className='nav_item_icon_p'
                                 onClick={() => {
                                     window.location.href = '/userProfile';
                                 }}

@@ -1,30 +1,33 @@
 .nav_con {
-  width: 1440px;
+  max-width: 1440px;
   margin: 0 auto;
+  padding: 0 20px;
+
+ 
 }
 .side_logoo {
-  background-image: url("./img/logocover.png");
-  width: 150px;
-  height: 40px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
+  width: 250px;
+  height: 130px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.nav_logo {
+  width: 100%;
+  height: 130px;
+
+  object-fit: contain;
 }
 
 .navbar {
-  width: 100%;
-  display: flex;
-  padding: 20px 0;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #ccc;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1.5px solid white;
   position: fixed;
-  top: 0;
-  left: 0;
-  background-color: white;
+  width: 100%;
   z-index: 1000;
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-normal);
 }
 
 .navbar_hidden {
@@ -39,38 +42,45 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 25px;
-  width: 100%;
 }
 .nav_item_icon {
   font-size: 35px;
-  color: #004c5d;
+  color:white;
   cursor: pointer;
+  position: relative;
+  
 }
 .nav_item_icon_noty {
   font-size: 35px;
-  color: #ff715b;
+  color: white;
   cursor: pointer;
+  position: relative;
+  margin-right: 350px;
 }
+.nav_item_icon_noty:hover {
+  color: #ff715b;
+}
+
+
+
+
+
+
+
 .nav_bar_item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 20px;
+  gap: 2rem;
 }
 .nav_item_icon:hover {
   color: #ff715b;
 }
 .nav_nav_item:hover {
-  color: #ff715b;
+  color: var(--text);
 }
 .nav_nav_item_active {
-  font-size: 16px;
-  color: #ff715b !important; 
-  cursor: pointer;
+  color: var(--primary);
   font-weight: 600;
-  text-transform: uppercase;
-  position: relative; 
 }
 
 .nav_nav_item_active::before {
@@ -84,28 +94,26 @@
 }
 
 .nav_nav_item {
-  font-size: 16px;
-  color: #004c5d;
-  cursor: pointer;
-  text-transform: uppercase;
+  color:white;
   font-weight: 500;
-  position: relative; 
-  transition: color 0.3s ease;
+  position: relative;
+  padding: 0.5rem;
+  transition: color var(--transition-normal);
 }
 
 .nav_nav_item::after {
   content: '';
   position: absolute;
+  bottom: 0;
   left: 0;
-  bottom: -2px; 
   width: 0;
-  height: 2px; 
-  background-color: #FF715B;
-  transition: width 0.3s ease;
+  height: 2px;
+  background: var(--primary-gradient);
+  transition: width var(--transition-normal);
 }
 
 .nav_nav_item:hover {
-  color: #FF715B;
+  color:#ff715b;
 }
 
 .nav_nav_item:hover::after {

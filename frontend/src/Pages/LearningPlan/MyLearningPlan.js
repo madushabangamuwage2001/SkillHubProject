@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './post.css';
+import './MyLearningPlan.css';
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { IoIosCreate } from "react-icons/io";
@@ -10,23 +10,22 @@ import { HiCalendarDateRange } from "react-icons/hi2";
 function MyLearningPlan() {
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
-  const [searchOwnerName, setSearchOwnerName] = useState('');
   const userId = localStorage.getItem('userID');
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await axios.get('http://localhost:8080/learningPlan');
-        const userPosts = response.data.filter(post => post.postOwnerID === userId); // Filter posts by userID
+        const userPosts = response.data.filter(post => post.postOwnerID === userId);
         setPosts(userPosts);
-        setFilteredPosts(userPosts); // Initially show filtered posts
+        setFilteredPosts(userPosts);
       } catch (error) {
         console.error('Error fetching posts:', error);
       }
     };
 
     fetchPosts();
-  }, []); // Ensure this runs only once on component mount
+  }, []);
 
   const getEmbedURL = (url) => {
     try {
@@ -38,23 +37,23 @@ function MyLearningPlan() {
         const videoId = url.split('youtu.be/')[1];
         return `https://www.youtube.com/embed/${videoId}`;
       }
-      return url; // Return the original URL if it's not a YouTube link
+      return url;
     } catch (error) {
       console.error('Invalid URL:', url);
-      return ''; // Return an empty string for invalid URLs
+      return '';
     }
   };
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this post?');
+    const confirmDelete = window.confirm('Are you sure you want to delete this learning plan?');
     if (confirmDelete) {
       try {
         await axios.delete(`http://localhost:8080/learningPlan/${id}`);
-        alert('Post deleted successfully!');
-        setFilteredPosts(filteredPosts.filter((post) => post.id !== id)); // Update the list after deletion
+        alert('Learning plan deleted successfully!');
+        setFilteredPosts(filteredPosts.filter((post) => post.id !== id));
       } catch (error) {
         console.error('Error deleting post:', error);
-        alert('Failed to delete post.');
+        alert('Failed to delete learning plan.');
       }
     }
   };
@@ -63,55 +62,69 @@ function MyLearningPlan() {
     window.location.href = `/updateLearningPlan/${id}`;
   };
 
+  const VideoPlayer = ({ videoUrl }) => (
+    <div className="MLPvideo-container">
+      <video 
+        controls
+    
+        className="MLPpost-video"
+      >
+        <source src={`http://localhost:8080/learningPlan/planVideos/${videoUrl}`} type="video/mp4" />
+        
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  );
+
   const renderPostByTemplate = (post) => {
-    console.log('Rendering post:', post); // Debugging: Log the post object
-    if (!post.templateID) { // Use the correct field name
-      console.warn('Missing templateID for post:', post); // Warn if templateID is missing
-      return <div className="template template-default">Invalid template ID</div>;
+    if (!post.templateID) {
+      return <div className="MLPtemplate MLPtemplate-default">Invalid template ID</div>;
     }
 
-    switch (post.templateID) { // Use the correct field name
+    switch (post.templateID) {
       case 1:
         return (
-          <div className="template_dis template-1">
-            <div className='user_details_card'>
-              <div>
-                <div className='name_section_post'>
-                  <p className='name_section_post_owner_name'>{post.postOwnerName}</p>
-                </div>
+          <div className="MLPtemplate MLPtemplate-1">
+            <div className="MLPtemplate-header">
+              <div className="MLPuser-info">
+                <p className="MLPuser-name">{post.postOwnerName}</p>
               </div>
-              {post.postOwnerID === localStorage.getItem('userID') && (
-                <div className='action_btn_icon_post'>
-                  <FaEdit
-                    onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                  <RiDeleteBin6Fill
-                    onClick={() => handleDelete(post.id)}
-                    className='action_btn_icon' />
-                </div>
-              )}
+              <div className="MLPaction-buttons">
+                <FaEdit
+                  onClick={() => handleUpdate(post.id)}
+                  className="MLPaction-icon MLPedit-icon"
+                  title="Edit Learning Plan"
+                />
+                <RiDeleteBin6Fill
+                  onClick={() => handleDelete(post.id)}
+                  className="MLPaction-icon MLPdelete-icon"
+                  title="Delete Learning Plan"
+                />
+              </div>
             </div>
-            <p className='template_title'>{post.title}</p>
-            <p className='template_dates'><HiCalendarDateRange /> {post.startDate} to {post.endDate} </p>
-            <p className='template_description'>{post.category}</p>
-            <hr></hr>
-            <p className='template_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-            <div className="tags_preview">
+            <h3 className="MLPtemplate-title">{post.title}</h3>
+            <p className="MLPtemplate-dates"><HiCalendarDateRange /> {post.startDate} to {post.endDate}</p>
+            <p className="MLPtemplate-category">{post.category}</p>
+            <hr className="MLPtemplate-divider" />
+            <p className="MLPtemplate-description" style={{ whiteSpace: "pre-line" }}>{post.description}</p>
+            <div className="MLPtemplate-tags">
               {post.tags?.map((tag, index) => (
-                <span key={index} className="tagname">#{tag}</span>
+                <span key={index} className="MLPtemplate-tag">#{tag}</span>
               ))}
             </div>
             {post.imageUrl && (
               <img
                 src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
                 alt={post.title}
-                className="iframe_preview_dis"
+                className="MLPtemplate-media"
               />
             )}
+            {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} />}
             {post.contentURL && (
               <iframe
                 src={getEmbedURL(post.contentURL)}
                 title={post.title}
-                className="iframe_preview_dis"
+                className="MLPtemplate-media"
                 frameBorder="0"
                 allowFullScreen
               ></iframe>
@@ -120,50 +133,51 @@ function MyLearningPlan() {
         );
       case 2:
         return (
-          <div className="template_dis template-2">
-            <div className='user_details_card'>
-              <div>
-                <div className='name_section_post'>
-                  <p className='name_section_post_owner_name'>{post.postOwnerName}</p>
-                </div>
-                
+          <div className="MLPtemplate MLPtemplate-2">
+            <div className="MLPtemplate-header">
+              <div className="MLPuser-info">
+                <p className="MLPuser-name">{post.postOwnerName}</p>
               </div>
-              {post.postOwnerID === localStorage.getItem('userID') && (
-                <div className='action_btn_icon_post'>
-                  <FaEdit
-                    onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                  <RiDeleteBin6Fill
-                    onClick={() => handleDelete(post.id)}
-                    className='action_btn_icon' />
-                </div>
-              )}
+              <div className="MLPaction-buttons">
+                <FaEdit
+                  onClick={() => handleUpdate(post.id)}
+                  className="MLPaction-icon MLPedit-icon"
+                  title="Edit Learning Plan"
+                />
+                <RiDeleteBin6Fill
+                  onClick={() => handleDelete(post.id)}
+                  className="MLPaction-icon MLPdelete-icon"
+                  title="Delete Learning Plan"
+                />
+              </div>
             </div>
-            <p className='template_title'>{post.title}</p>
-            <p className='template_dates'><HiCalendarDateRange /> {post.startDate} to {post.endDate} </p>
-            <p className='template_description'>{post.category}</p>
-            <hr></hr>
-            <p className='template_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-            <div className="tags_preview">
+            <h3 className="MLPtemplate-title">{post.title}</h3>
+            <p className="MLPtemplate-dates"><HiCalendarDateRange /> {post.startDate} to {post.endDate}</p>
+            <p className="MLPtemplate-category">{post.category}</p>
+            <hr className="MLPtemplate-divider" />
+            <p className="MLPtemplate-description" style={{ whiteSpace: "pre-line" }}>{post.description}</p>
+            <div className="MLPtemplate-tags">
               {post.tags?.map((tag, index) => (
-                <span key={index} className="tagname">#{tag}</span>
+                <span key={index} className="MLPtemplate-tag">#{tag}</span>
               ))}
             </div>
-            <div className='preview_part'>
-              <div className='preview_part_sub'>
+            <div className="MLPtemplate-media-split">
+              <div className="MLPtemplate-media-split-item">
                 {post.imageUrl && (
                   <img
                     src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
                     alt={post.title}
-                    className="iframe_preview"
+                    className="MLPtemplate-media"
                   />
                 )}
               </div>
-              <div className='preview_part_sub'>
+              <div className="MLPtemplate-media-split-item">
+                {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} />}
                 {post.contentURL && (
                   <iframe
                     src={getEmbedURL(post.contentURL)}
                     title={post.title}
-                    className="iframe_preview"
+                    className="MLPtemplate-media"
                     frameBorder="0"
                     allowFullScreen
                   ></iframe>
@@ -174,56 +188,56 @@ function MyLearningPlan() {
         );
       case 3:
         return (
-          <div className="template_dis template-3">
-            <div className='user_details_card'>
-              <div>
-                <div className='name_section_post'>
-                  <p className='name_section_post_owner_name'>{post.postOwnerName}</p>
-                </div>
-                
+          <div className="MLPtemplate MLPtemplate-3">
+            <div className="MLPtemplate-header">
+              <div className="MLPuser-info">
+                <p className="MLPuser-name">{post.postOwnerName}</p>
               </div>
-              {post.postOwnerID === localStorage.getItem('userID') && (
-                <div className='action_btn_icon_post'>
-                  <FaEdit
-                    onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                  <RiDeleteBin6Fill
-                    onClick={() => handleDelete(post.id)}
-                    className='action_btn_icon' />
-                </div>
-              )}
+              <div className="MLPaction-buttons">
+                <FaEdit
+                  onClick={() => handleUpdate(post.id)}
+                  className="MLPaction-icon MLPedit-icon"
+                  title="Edit Learning Plan"
+                />
+                <RiDeleteBin6Fill
+                  onClick={() => handleDelete(post.id)}
+                  className="MLPaction-icon MLPdelete-icon"
+                  title="Delete Learning Plan"
+                />
+              </div>
             </div>
             {post.imageUrl && (
               <img
                 src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
                 alt={post.title}
-                className="iframe_preview_dis"
+                className="MLPtemplate-media"
               />
             )}
+            {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} />}
             {post.contentURL && (
               <iframe
                 src={getEmbedURL(post.contentURL)}
                 title={post.title}
-                className="iframe_preview_dis"
+                className="MLPtemplate-media"
                 frameBorder="0"
                 allowFullScreen
               ></iframe>
             )}
-            <p className='template_title'>{post.title}</p>
-            <p className='template_dates'><HiCalendarDateRange /> {post.startDate} to {post.endDate} </p>
-            <p className='template_description'>{post.category}</p>
-            <hr></hr>
-            <p className='template_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-            <div className="tags_preview">
+            <h3 className="MLPtemplate-title">{post.title}</h3>
+            <p className="MLPtemplate-dates"><HiCalendarDateRange /> {post.startDate} to {post.endDate}</p>
+            <p className="MLPtemplate-category">{post.category}</p>
+            <hr className="MLPtemplate-divider" />
+            <p className="MLPtemplate-description" style={{ whiteSpace: "pre-line" }}>{post.description}</p>
+            <div className="MLPtemplate-tags">
               {post.tags?.map((tag, index) => (
-                <span key={index} className="tagname">#{tag}</span>
+                <span key={index} className="MLPtemplate-tag">#{tag}</span>
               ))}
             </div>
           </div>
         );
       default:
-        console.warn('Unknown templateID:', post.templateID); // Warn if templateID is unexpected
         return (
-          <div className="template template-default">
+          <div className="MLPtemplate MLPtemplate-default">
             <p>Unknown template ID: {post.templateID}</p>
           </div>
         );
@@ -231,29 +245,36 @@ function MyLearningPlan() {
   };
 
   return (
-    <div>
-      <div className='continer'>
-        <NavBar />
-        <div className='continSection'>
-
-          <div className='add_new_btn' onClick={() => (window.location.href = '/addLearningPlan')}>
-            <IoIosCreate className='add_new_btn_icon' />
-          </div>
-          <div className='post_card_continer'>
-            {filteredPosts.length === 0 ? (
-              <div className='not_found_box'>
-                <div className='not_found_img'></div>
-                <p className='not_found_msg'>No posts found. Please create a new post.</p>
-                <button className='not_found_btn' onClick={() => (window.location.href = '/addLearningPlan')}>Create New Post</button>
+    <div className="MLPmy-learning-plan-container">
+      <NavBar />
+      <div className="MLPmy-learning-plan-content">
+        <h1 className="MLPmy-learning-plan-title">My Learning Plans</h1>
+        <button
+          className="MLPadd-button"
+          onClick={() => (window.location.href = '/addLearningPlan')}
+          title="Add New Learning Plan"
+        >
+          <IoIosCreate className="MLPadd-button-icon" />
+        </button>
+        <div className="MLPplans-grid">
+          {filteredPosts.length === 0 ? (
+            <div className="MLPno-plans">
+              <div className="MLPno-plans-icon"></div>
+              <p className="MLPno-plans-message">No learning plans found. Create your first plan!</p>
+              <button
+                className="MLPcreate-button"
+                onClick={() => (window.location.href = '/addLearningPlan')}
+              >
+                Create New Plan
+              </button>
+            </div>
+          ) : (
+            filteredPosts.map((post) => (
+              <div key={post.id} className="MLPplan-card">
+                {renderPostByTemplate(post)}
               </div>
-            ) : (
-              filteredPosts.map((post) => (
-                <div key={post.id} className='post_card_new'>
-                  {renderPostByTemplate(post)}
-                </div>
-              ))
-            )}
-          </div>
+            ))
+          )}
         </div>
       </div>
     </div>
