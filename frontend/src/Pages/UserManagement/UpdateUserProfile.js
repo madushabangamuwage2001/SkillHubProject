@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { IoMdAdd } from "react-icons/io";
 import NavBar from '../../Components/NavBar/NavBar';
-import VoiceInput from '../../Components/VoiceInput/VoiceInput';
+import './UpdateUserProfile.css';
 
 function UpdateUserProfile() {
   const { id } = useParams();
@@ -11,29 +11,13 @@ function UpdateUserProfile() {
     email: '',
     password: '',
     phone: '',
-    skills: [], // Added skills field
-    bio: '', // Added bio field
+    skills: [],
+    bio: '',
   });
   const [profilePicture, setProfilePicture] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null); // State for previewing the selected image
+  const [previewImage, setPreviewImage] = useState(null);
   const navigate = useNavigate();
   const [skillInput, setSkillInput] = useState('');
-  const [isListening, setIsListening] = useState({
-    fullname: false,
-    bio: false
-  });
-  const [interimText, setInterimText] = useState({
-    fullname: '',
-    bio: ''
-  });
-  const [transcribedText, setTranscribedText] = useState({
-    fullname: '',
-    bio: ''
-  });
-  const [voiceHistory, setVoiceHistory] = useState({
-    fullname: [],
-    bio: []
-  });
 
   const handleAddSkill = () => {
     if (skillInput.trim()) {
@@ -76,36 +60,6 @@ function UpdateUserProfile() {
     }
   };
 
-  const handleVoiceInput = (field, text, isFinal) => {
-    if (isFinal) {
-      const finalText = text.trim();
-      setTranscribedText(prev => ({ ...prev, [field]: finalText }));
-      setVoiceHistory(prev => ({
-        ...prev,
-        [field]: [...prev[field], finalText]
-      }));
-      
-      setFormData(prev => ({
-        ...prev,
-        [field]: prev[field] ? `${prev[field]} ${finalText}` : finalText
-      }));
-    } else {
-      setInterimText(prev => ({ ...prev, [field]: text }));
-    }
-  };
-
-  const startVoiceInput = (field) => {
-    setIsListening(prev => ({ ...prev, [field]: true }));
-    setInterimText(prev => ({ ...prev, [field]: '' }));
-  };
-
-  const stopVoiceInput = (field) => {
-    setIsListening(prev => ({ ...prev, [field]: false }));
-    setTimeout(() => {
-      setTranscribedText(prev => ({ ...prev, [field]: '' }));
-    }, 3000);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -124,7 +78,7 @@ function UpdateUserProfile() {
           });
         }
         alert('Profile updated successfully!');
-        window.location.href = '/userProfile'; // Redirect to user profile page
+        navigate('/userProfile');
       } else {
         alert('Failed to update profile.');
       }
@@ -134,182 +88,141 @@ function UpdateUserProfile() {
   };
 
   return (
-    <div>
-      <div className='continer'>
-        <NavBar/>
-        <div className='continSection'>
-          <div className="from_continer">
-            <p className="Auth_heading">Update User Profile</p>
-            <form onSubmit={handleSubmit} className="Auth_form">
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Full Name</label>
-                <div className="input-with-voice">
-                  <input
-                    className={`Auth_input ${isListening.fullname ? 'listening' : ''}`}
-                    type="text"
-                    name="fullname"
-                    placeholder={isListening.fullname ? 'Listening...' : 'Full Name'}
-                    value={isListening.fullname ? `${formData.fullname} ${interimText.fullname}` : formData.fullname}
-                    onChange={handleInputChange}
-                    required
-                  />
-                  <VoiceInput 
-                    onTextUpdate={handleVoiceInput} 
-                    fieldName="fullname"
-                    isListening={isListening.fullname}
-                    onStartListening={() => startVoiceInput('fullname')}
-                    onStopListening={() => stopVoiceInput('fullname')}
-                  />
-                  {(transcribedText.fullname || interimText.fullname) && (
-                    <div className={`transcribed-text ${isListening.fullname ? 'listening' : 'completed'}`}>
-                      {isListening.fullname ? 
-                        `Recording: ${interimText.fullname}` : 
-                        `Latest: ${transcribedText.fullname}`}
-                    </div>
-                  )}
-                  {voiceHistory.fullname.length > 0 && (
-                    <div className="voice-history">
-                      <p className="voice-history-title">Voice Input History:</p>
-                      {voiceHistory.fullname.map((text, index) => (
-                        <div key={index} className="voice-history-item">{text}</div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+    <div className="profile-update-container">
+      <NavBar/>
+      <div className="content-section">
+        <div className="form-container">
+          <h1 className="form-heading">Update User Profile</h1>
+          <form onSubmit={handleSubmit} className="update-form">
+            <div className="form-group">
+              <label className="form-label">Full Name</label>
+              <input
+                className="form-input"
+                type="text"
+                name="fullname"
+                placeholder="Full Name"
+                value={formData.fullname}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Email Address</label>
+              <input
+                className="form-input"
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Password</label>
+              <input
+                className="form-input"
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Phone</label>
+              <input
+                className="form-input"
+                type="text"
+                name="phone"
+                placeholder="Phone"
+                value={formData.phone}
+                onChange={(e) => {
+                  const re = /^[0-9\b]{0,10}$/;
+                  if (re.test(e.target.value)) {
+                    handleInputChange(e);
+                  }
+                }}
+                maxLength="10"
+                pattern="[0-9]{10}"
+                title="Please enter exactly 10 digits."
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Skills</label>
+              <div className="skil-container">
+                {formData.skills.map((skill, index) => (
+                  <div className="skill-tag" key={index}>
+                    {skill} 
+                    <span 
+                      className="remove-skill" 
+                      onClick={() => handleRemoveSkill(skill)}
+                    >
+                      x
+                    </span>
+                  </div>
+                ))}
               </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Email Address</label>
+              <div className="skill-input-group">
                 <input
-                  className="Auth_input"
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Password</label>
-                <input
-                  className="Auth_input"
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Phone</label>
-                <input
-                  className="Auth_input"
+                  className="form-input skill-input"
                   type="text"
-                  name="phone"
-                  placeholder="Phone"
-                  value={formData.phone}
-                  onChange={(e) => {
-                    const re = /^[0-9\b]{0,10}$/;
-                    if (re.test(e.target.value)) {
-                      handleInputChange(e);
-                    }
-                  }}
-                  maxLength="10"
-                  pattern="[0-9]{10}"
-                  title="Please enter exactly 10 digits."
-                  required
+                  placeholder="Add Skill"
+                  value={skillInput}
+                  onChange={(e) => setSkillInput(e.target.value)}
                 />
+                <button 
+                  type="button" 
+                  className="add-skill-btn" 
+                  onClick={handleAddSkill}
+                >
+                  <IoMdAdd className="add-skill-icon" />
+                </button>
               </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Skills</label>
-                <div className='skil_dis_con'>
-                  {formData.skills.map((skill, index) => (
-                    <p className='skil_name' key={index}>
-                      {skill} 
-                      <span 
-                        className='remve_skil' 
-                        onClick={() => handleRemoveSkill(skill)}
-                      >
-                        x
-                      </span>
-                    </p>
-                  ))}
-                </div>
-                <div className='skil_addbtn'>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Bio</label>
+              <textarea
+                className="form-input"
+                name="bio"
+                placeholder="Bio"
+                value={formData.bio}
+                onChange={handleInputChange}
+                rows={3}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Profile Picture</label>
+              <div className="profile-image-section">
+                {previewImage ? (
+                  <img
+                    src={previewImage}
+                    alt="Selected Profile"
+                    className="profile-preview"
+                  />
+                ) : formData.profilePicturePath ? (
+                  <img
+                    src={`http://localhost:8080/uploads/profile/${formData.profilePicturePath}`}
+                    alt="Current Profile"
+                    className="profile-preview"
+                  />
+                ) : (
+                  <div className="profile-preview">No profile picture</div>
+                )}
+                <div className="file-input-container">
                   <input
-                    className="Auth_input"
-                    type="text"
-                    placeholder="Add Skill"
-                    value={skillInput}
-                    onChange={(e) => setSkillInput(e.target.value)}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProfilePictureChange}
+                    className="file-input"
                   />
-                  <IoMdAdd onClick={handleAddSkill} className="add_s_btn" />
                 </div>
               </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Bio</label>
-                <div className="input-with-voice">
-                  <textarea
-                    className={`Auth_input ${isListening.bio ? 'listening' : ''}`}
-                    name="bio"
-                    placeholder={isListening.bio ? 'Listening...' : 'Bio'}
-                    value={isListening.bio ? `${formData.bio} ${interimText.bio}` : formData.bio}
-                    onChange={handleInputChange}
-                    rows={3}
-                  />
-                  <VoiceInput 
-                    onTextUpdate={handleVoiceInput} 
-                    fieldName="bio"
-                    isListening={isListening.bio}
-                    onStartListening={() => startVoiceInput('bio')}
-                    onStopListening={() => stopVoiceInput('bio')}
-                  />
-                  {(transcribedText.bio || interimText.bio) && (
-                    <div className={`transcribed-text ${isListening.bio ? 'listening' : 'completed'}`}>
-                      {isListening.bio ? 
-                        `Recording: ${interimText.bio}` : 
-                        `Latest: ${transcribedText.bio}`}
-                    </div>
-                  )}
-                  {voiceHistory.bio.length > 0 && (
-                    <div className="voice-history">
-                      <p className="voice-history-title">Voice Input History:</p>
-                      {voiceHistory.bio.map((text, index) => (
-                        <div key={index} className="voice-history-item">{text}</div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Profile Picture</label>
-                <div className="profile-icon-container">
-                  {previewImage ? (
-                    <img
-                      src={previewImage}
-                      alt="Selected Profile"
-                      className="selected-image-preview"
-                    />
-                  ) : formData.profilePicturePath ? (
-                    <img
-                      src={`http://localhost:8080/uploads/profile/${formData.profilePicturePath}`}
-                      alt="Current Profile"
-                      className="selected-image-preview"
-                    />
-                  ) : (
-                    <p>No profile picture selected</p>
-                  )}
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProfilePictureChange}
-                />
-              </div>
-              <button type="submit" className="Auth_button">Update</button>
-            </form>
-          </div>
+            </div>
+            <button type="submit" className="update-button">Update Profile</button>
+          </form>
         </div>
       </div>
     </div>

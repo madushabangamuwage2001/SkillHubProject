@@ -97,6 +97,7 @@ function NavBar() {
                                 onClick={() => (window.location.href = '/notifications')} />
                         ) : (
                             <MdNotificationsActive className='nav_item_icon_noty' onClick={() => (window.location.href = '/notifications')} />
+                            
                         )}
                         <IoLogOut
                             className='nav_item_icon'
@@ -124,8 +125,8 @@ function NavBar() {
                             <img
                                 src={userProfileImage}
                                 alt="User Profile"
-                                className="nav_item_icon"
-                                style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                                className="nav_item_icon_p"
+                                style={{ width: '40px', height: '40px', borderRadius: '50%',  }}
                                 onError={(e) => {
                                     e.target.onerror = null;
                                     e.target.src = Pro;
@@ -136,7 +137,7 @@ function NavBar() {
                             />
                         ) : (
                             <FaUserGraduate
-                                className='nav_item_icon'
+                                className='nav_item_icon_p'
                                 onClick={() => {
                                     window.location.href = '/userProfile';
                                 }}
