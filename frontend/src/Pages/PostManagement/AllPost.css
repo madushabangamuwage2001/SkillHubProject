@@ -586,6 +586,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .ANPadd-comment {
@@ -645,11 +647,13 @@ body {
 }
 
 [data-theme="light"] .ANPcomment {
-  background: var(--surface-light);
+  /* background: var(--surface-light); */
+  background-color: #cdcecf8e;
 }
 
 .ANPcomment-content {
   flex: 1;
+  /* background-color: #22c55e; */
 }
 
 .ANPcomment-username {
@@ -717,6 +721,8 @@ body {
 .ANPcomment-action-btn.ANPcancel:hover {
   color: #6b7280;
 }
+
+/* End Comment Style */
 
 .ANPno-posts {
   text-align: center;
