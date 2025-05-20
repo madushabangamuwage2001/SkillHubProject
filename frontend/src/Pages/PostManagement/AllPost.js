@@ -17,6 +17,7 @@ import NavBar from '../../Components/NavBar/NavBar';
 import Pro from '../../Components/NavBar/img/img.png';
 import { fetchUserDetails } from '../../Pages/UserManagement/UserProfile';
 import './AllPost.css';
+import CommentSection from './CommentSection.js';
 
 Modal.setAppElement('#root');
 
@@ -502,9 +503,10 @@ function AllPost() {
                       </div>
                     ))}
                   </div>
-                  <div className="ANPpost-footer">
+                  
+                  {/* <div className="ANPpost-footer">
                     <div className="ANPinteraction-bar">
-                      <button
+                       <button
                         className={`ANPlike-btn ${post.likes?.[loggedInUserID] ? 'ANPliked' : ''}`}
                         onClick={() => handleLike(post.id)}
                         aria-label={`Like post (${Object.values(post.likes || {}).filter((liked) => liked).length} likes)`}
@@ -512,6 +514,7 @@ function AllPost() {
                         <BiSolidLike />{' '}
                         {Object.values(post.likes || {}).filter((liked) => liked).length}
                       </button>
+                      
                       <span className="ANPcomment-count">
                         <FaCommentAlt /> {post.comments?.length || 0}
                       </span>
@@ -626,7 +629,22 @@ function AllPost() {
                         </div>
                       ))}
                     </div>
-                  </div>
+                  </div> */}
+
+<CommentSection
+                    post={post}
+                    loggedInUserID={loggedInUserID}
+                    newComment={newComment}
+                    setNewComment={setNewComment}
+                    editingComment={editingComment}
+                    setEditingComment={setEditingComment}
+                    handleAddComment={handleAddComment}
+                    handleDeleteComment={handleDeleteComment}
+                    handleSaveComment={handleSaveComment}
+                  />
+
+
+
                 </div>
               ))
             )}
