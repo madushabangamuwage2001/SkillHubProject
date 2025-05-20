@@ -152,7 +152,7 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 639px) {
   .notifications-content {
     padding: 2rem 0.75rem;
   }
