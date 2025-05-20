@@ -42,6 +42,9 @@ body {
 .MAPmy-posts-container {
   min-height: 100vh;
   padding: var(--space-8);
+  background: var(--dark-gradient);
+
+
 }
 
 .MAPmy-posts-content {
@@ -60,6 +63,9 @@ body {
   color: var(--text);
   margin-top: 150px;
   margin-bottom: 15px;
+  background: linear-gradient(to right, purple, pink, white);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 
 }
 
@@ -146,6 +152,7 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
+  
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
 }

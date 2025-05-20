@@ -135,6 +135,8 @@ body {
   min-height: 100vh;
   font-family: var(--font-main);
   position: relative;
+  background: var(--dark-gradient);
+  
   
   
 }
@@ -160,6 +162,9 @@ body {
   color: var(--text-dark);
   margin-bottom: var(--space-3);
   line-height: 1.3;
+  background: linear-gradient(to right, purple, pink, white);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 [data-theme="light"] .ANPposts-title {
