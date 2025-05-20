@@ -2,6 +2,7 @@
   max-width: 1440px;
   margin: 0 auto;
   padding: 0 20px;
+
  
 }
 .side_logoo {
@@ -22,7 +23,7 @@
 .navbar {
   background: rgba(15, 23, 42, 0.8);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1.5px solid white;
   position: fixed;
   width: 100%;
   z-index: 1000;
