@@ -19,7 +19,7 @@
 }
 
 .Auth_logo {
-  background-image: url("./img/logocover.png");
+  /* background-image: url("./img/logocover.png"); */
   width: 130px;
   height: 45px;
   background-size: contain;

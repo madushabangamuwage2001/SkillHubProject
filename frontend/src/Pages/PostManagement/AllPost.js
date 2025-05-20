@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { IoSend, IoCreate } from 'react-icons/io5';
-import { FaEdit, FaUserGraduate, FaCommentAlt } from 'react-icons/fa';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import { IoSend, IoCreate, IoHome } from 'react-icons/io5';
+import { FaEdit, FaUserGraduate, FaCommentAlt, FaSearch, FaBell, FaUser } from 'react-icons/fa';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
 import { BiSolidLike } from 'react-icons/bi';
 import { MdDelete } from 'react-icons/md';
@@ -32,13 +35,16 @@ function AllPost() {
   const [googleProfileImage, setGoogleProfileImage] = useState(null);
   const [userType, setUserType] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const navigate = useNavigate();
   const loggedInUserID = localStorage.getItem('userID');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const postResponse = await axios.get('http://localhost:8080/posts');
+        const postResponse = await axios.get(`http://localhost:8080/posts`);
         const fetchedPosts = postResponse.data;
         setPosts(fetchedPosts);
         setFilteredPosts(fetchedPosts);
@@ -87,6 +93,31 @@ function AllPost() {
 
     fetchData();
   }, [loggedInUserID]);
+
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const fetchMorePosts = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/posts?page=${page + 1}`);
+      const newPosts = response.data.filter(
+        (newPost) => !posts.some((existingPost) => existingPost.id === newPost.id)
+      );
+      if (newPosts.length === 0) {
+        setHasMore(false);
+        return;
+      }
+      setPosts((prev) => [...prev, ...newPosts]);
+      setFilteredPosts((prev) => (showMyPosts
+        ? [...prev, ...newPosts.filter((post) => post.userID === loggedInUserID)]
+        : [...prev, ...newPosts]));
+      setPage((prev) => prev + 1);
+    } catch (error) {
+      console.error('Error fetching more posts:', error);
+      setHasMore(false);
+    }
+  };
 
   const handleDelete = async (postId) => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
@@ -279,9 +310,15 @@ function AllPost() {
     setIsModalOpen(false);
   };
 
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  
+
   if (isLoading) {
     return (
-      <div className="ANPloading-container">
+      <div className="ANPloading-container" data-theme={theme}>
         <div className="ANPloading-spinner"></div>
         <p>Loading posts...</p>
       </div>
@@ -289,9 +326,10 @@ function AllPost() {
   }
 
   return (
-    <div className="ANPall-posts-container">
+    <div className="ANPall-posts-container" data-theme={theme}>
       <NavBar />
-      <div className="ANPall-posts-content">
+      <div className="ANPall-posts-content" >
+        
         <div className="ANPposts-header">
           <h1 className="ANPposts-title">Explore Posts</h1>
           <div className="ANPposts-controls">
@@ -301,12 +339,21 @@ function AllPost() {
               placeholder="Search by title, description, or category"
               value={searchQuery}
               onChange={handleSearch}
+              aria-label="Search posts"
             />
             <button
               className={`ANPtoggle-my-posts-btn ${showMyPosts ? 'ANPactive' : ''}`}
               onClick={handleMyPostsToggle}
+              aria-label={showMyPosts ? 'Show all posts' : 'Show my posts'}
             >
               {showMyPosts ? 'All Posts' : 'My Posts'}
+            </button>
+            <button
+              className="ANPbutton-primary"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+            >
+              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
             </button>
           </div>
         </div>
@@ -314,127 +361,131 @@ function AllPost() {
           className="ANPcreate-post-btn"
           onClick={() => navigate('/addNewPost')}
           title="Create New Post"
+          aria-label="Create new post"
         >
           <IoCreate />
         </button>
-        <div className="ANPposts-grid">
-          {filteredPosts.length === 0 ? (
-            <div className="ANPno-posts">
-              <div className="ANPno-posts-icon"></div>
-              <p className="ANPno-posts-message">
-                {showMyPosts ? 'You haven’t created any posts yet.' : 'No posts found.'}
-              </p>
-              <button className="ANPcreate-post-link" onClick={() => navigate('/addNewPost')}>
-                Create New Post
-              </button>
+        <InfiniteScroll
+          dataLength={filteredPosts.length}
+          next={fetchMorePosts}
+          hasMore={hasMore}
+          loader={
+            <div className="ANPposts-grid">
+              {Array(3).fill().map((_, i) => (
+                <div key={i} className="ANPpost-card">
+                  <Skeleton circle width={32} height={32} />
+                  <Skeleton height={16} width="60%" style={{ margin: '4px 0' }} />
+                  <Skeleton height={150} />
+                  <Skeleton count={2} />
+                </div>
+              ))}
             </div>
-          ) : (
-            filteredPosts.map((post) => (
-              <div key={post.id} className="ANPpost-card">
-                <div className="ANPpost-header">
-                  <div className="ANPuser-info">
-                    {googleProfileImage ? (
-                      <img
-                        src={googleProfileImage}
-                        alt="Profile"
-                        className="ANPuser-avatar"
-                        onError={(e) => (e.target.src = Pro)}
-                        onClick={() => navigate('/googalUserPro')}
-                      />
-                    ) : userProfileImage ? (
-                      <img
-                        src={userProfileImage}
-                        alt="Profile"
-                        className="ANPuser-avatar"
-                        onError={(e) => (e.target.src = Pro)}
-                        onClick={() => navigate('/userProfile')}
-                      />
-                    ) : (
-                      <FaUserGraduate
-                        className="ANPuser-avatar-icon"
-                        onClick={() => navigate('/userProfile')}
-                      />
+          }
+        >
+          <div className="ANPposts-grid">
+            {filteredPosts.length === 0 ? (
+              <div className="ANPno-posts">
+                <div className="ANPno-posts-icon"></div>
+                <p className="ANPno-posts-message">
+                  {showMyPosts ? 'You haven’t created any posts yet.' : 'No posts found.'}
+                </p>
+                <button
+                  className="ANPcreate-post-link"
+                  onClick={() => navigate('/addNewPost')}
+                  aria-label="Create new post"
+                >
+                  Create New Post
+                </button>
+              </div>
+            ) : (
+              filteredPosts.map((post) => (
+                <div key={post.id} className="ANPpost-card">
+                  <div className="ANPpost-header">
+                    <div className="ANPuser-info">
+                      {googleProfileImage ? (
+                        <img
+                          src={googleProfileImage}
+                          alt="Profile"
+                          className="ANPuser-avatar"
+                          onError={(e) => (e.target.src = Pro)}
+                          onClick={() => navigate('/googalUserPro')}
+                        />
+                      ) : userProfileImage ? (
+                        <img
+                          src={userProfileImage}
+                          alt="Profile"
+                          className="ANPuser-avatar"
+                          onError={(e) => (e.target.src = Pro)}
+                          onClick={() => navigate('/userProfile')}
+                        />
+                      ) : (
+                        <FaUserGraduate
+                          className="ANPuser-avatar-icon"
+                          onClick={() => navigate('/userProfile')}
+                          aria-label="User profile"
+                        />
+                      )}
+                      <div className="ANPuser-details">
+                        <span className="ANPuser-name">{postOwners[post.userID] || 'Anonymous'}</span>
+                        <span className="ANPpost-date">
+                          {new Date(post.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                    {post.userID !== loggedInUserID && (
+                      <button
+                        className={`ANPfollow-btn ${followedUsers.includes(post.userID) ? 'ANPunfollow' : ''}`}
+                        onClick={() => handleFollowToggle(post.userID)}
+                        aria-label={followedUsers.includes(post.userID) ? 'Unfollow user' : 'Follow user'}
+                      >
+                        {followedUsers.includes(post.userID) ? 'Unfollow' : 'Follow'}
+                      </button>
                     )}
-                    <div className="ANPuser-details">
-                      <span className="ANPuser-name">{postOwners[post.userID] || 'Anonymous'}</span>
-                      <span className="ANPpost-date">
-                        {new Date(post.createdAt).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </span>
-                    </div>
+                    {post.userID === loggedInUserID && (
+                      <div className="ANPpost-actions">
+                        <button
+                          className="ANPaction-btn ANPedit-btn"
+                          onClick={() => handleUpdate(post.id)}
+                          title="Edit Post"
+                          aria-label="Edit post"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          className="ANPaction-btn ANPdelete-btn"
+                          onClick={() => handleDelete(post.id)}
+                          title="Delete Post"
+                          aria-label="Delete post"
+                        >
+                          <RiDeleteBin6Fill />
+                        </button>
+                      </div>
+                    )}
                   </div>
-                  {post.userID !== loggedInUserID && (
-                    <button
-                      className={`ANPfollow-btn ${followedUsers.includes(post.userID) ? 'ANPunfollow' : ''}`}
-                      onClick={() => handleFollowToggle(post.userID)}
-                    >
-                      {followedUsers.includes(post.userID) ? 'Unfollow' : 'Follow'}
-                    </button>
-                  )}
-                  {post.userID === loggedInUserID && (
-                    <div className="ANPpost-actions">
-                      <button
-                        className="ANPaction-btn ANPedit-btn"
-                        onClick={() => handleUpdate(post.id)}
-                        title="Edit Post"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        className="ANPaction-btn ANPdelete-btn"
-                        onClick={() => handleDelete(post.id)}
-                        title="Delete Post"
-                      >
-                        <RiDeleteBin6Fill />
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <div className="ANPpost-content">
-                  <h2 className="ANPpost-title">{post.title}</h2>
-                  <p className="ANPpost-description" style={{ whiteSpace: 'pre-line' }}>
-                    {post.description}
-                  </p>
-                  <p className="ANPpost-category">Category: {post.category || 'Uncategorized'}</p>
-                </div>
-                <div className="ANPmedia-grid">
-                  {post.media.length === 3 ? (
-                    <div className="ANPthree-image-layout">
-                      <div className="ANPmain-image">
-                        <img
-                          className="ANPmedia-preview"
-                          src={`http://localhost:8080${post.media[0]}`}
-                          alt="Main media"
-                          onClick={() => openModal(post.media[0])}
-                        />
-                      </div>
-                      <div className="ANPsecondary-images">
-                        <img
-                          className="ANPmedia-preview"
-                          src={`http://localhost:8080${post.media[1]}`}
-                          alt="Second media"
-                          onClick={() => openModal(post.media[1])}
-                        />
-                        <img
-                          className="ANPmedia-preview"
-                          src={`http://localhost:8080${post.media[2]}`}
-                          alt="Third media"
-                          onClick={() => openModal(post.media[2])}
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    post.media.slice(0, 4).map((mediaUrl, index) => (
+                  <div className="ANPpost-content">
+                    <h2 className="ANPpost-title">{post.title}</h2>
+                    <p className="ANPpost-description" style={{ whiteSpace: 'pre-line' }}>
+                      {post.description}
+                    </p>
+                    <p className="ANPpost-category">Category: {post.category || 'Uncategorized'}</p>
+                  </div>
+                  <div className="ANPmedia-grid">
+                    {post.media.slice(0, 4).map((mediaUrl, index) => (
                       <div
                         key={index}
                         className={`ANPmedia-item ${post.media.length > 4 && index === 3 ? 'ANPmedia-overlay' : ''}`}
                         onClick={() => openModal(mediaUrl)}
                       >
                         {mediaUrl.endsWith('.mp4') ? (
-                          <video className="ANPmedia-preview">
+                          <video controls
+                          className="ANPmedia-preview"
+                        poster={`http://localhost:8080/thumbnails${mediaUrl}`}
+                             loading="lazy"
+                          >
                             <source src={`http://localhost:8080${mediaUrl}`} type="video/mp4" />
                           </video>
                         ) : (
@@ -442,122 +493,163 @@ function AllPost() {
                             className="ANPmedia-preview"
                             src={`http://localhost:8080${mediaUrl}`}
                             alt={`Media ${index}`}
+                            loading="lazy"
                           />
                         )}
                         {post.media.length > 4 && index === 3 && (
                           <div className="ANPoverlay-text">+{post.media.length - 4}</div>
                         )}
                       </div>
-                    ))
-                  )}
-                </div>
-                <div className="ANPpost-footer">
-                  <div className="ANPinteraction-bar">
-                    <button
-                      className={`ANPlike-btn ${post.likes?.[loggedInUserID] ? 'ANPliked' : ''}`}
-                      onClick={() => handleLike(post.id)}
-                    >
-                      <BiSolidLike />{' '}
-                      {Object.values(post.likes || {}).filter((liked) => liked).length}
-                    </button>
-                    <span className="ANPcomment-count">
-                      <FaCommentAlt /> {post.comments?.length || 0}
-                    </span>
-                  </div>
-                  <div className="ANPcomment-section">
-                    <div className="ANPadd-comment">
-                      <input
-                        type="text"
-                        className="ANPcomment-input"
-                        placeholder="Add a comment..."
-                        value={newComment[post.id] || ''}
-                        onChange={(e) =>
-                          setNewComment({ ...newComment, [post.id]: e.target.value })
-                        }
-                        onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.id)}
-                      />
-                      <button
-                        className="ANPsend-comment-btn"
-                        onClick={() => handleAddComment(post.id)}
-                      >
-                        <IoSend />
-                      </button>
-                    </div>
-                    {post.comments?.map((comment) => (
-                      <div key={comment.id} className="ANPcomment">
-                        <div className="ANPcomment-content">
-                          <span className="ANPcomment-username">{comment.userFullName}</span>
-                          {editingComment.id === comment.id ? (
-                            <input
-                              type="text"
-                              className="ANPedit-comment-input"
-                              value={editingComment.content}
-                              onChange={(e) =>
-                                setEditingComment({ ...editingComment, content: e.target.value })
-                              }
-                              autoFocus
-                            />
-                          ) : (
-                            <p className="ANPcomment-text">{comment.content}</p>
-                          )}
-                        </div>
-                        {(comment.userID === loggedInUserID || post.userID === loggedInUserID) && (
-                          <div className="ANPcomment-actions">
-                            {comment.userID === loggedInUserID &&
-                              (editingComment.id === comment.id ? (
-                                <>
-                                  <button
-                                    className="ANPcomment-action-btn ANPsave"
-                                    onClick={() =>
-                                      handleSaveComment(post.id, comment.id, editingComment.content)
-                                    }
-                                  >
-                                    <FiSave />
-                                  </button>
-                                  <button
-                                    className="ANPcomment-action-btn ANPcancel"
-                                    onClick={() => setEditingComment({})}
-                                  >
-                                    <TbPencilCancel />
-                                  </button>
-                                </>
-                              ) : (
-                                <>
-                                  <button
-                                    className="ANPcomment-action-btn ANPedit"
-                                    onClick={() =>
-                                      setEditingComment({ id: comment.id, content: comment.content })
-                                    }
-                                  >
-                                    <GrUpdate />
-                                  </button>
-                                  <button
-                                    className="ANPcomment-action-btn ANPdelete"
-                                    onClick={() => handleDeleteComment(post.id, comment.id)}
-                                  >
-                                    <MdDelete />
-                                  </button>
-                                </>
-                              ))}
-                            {post.userID === loggedInUserID && comment.userID !== loggedInUserID && (
-                              <button
-                                className="ANPcomment-action-btn ANPdelete"
-                                onClick={() => handleDeleteComment(post.id, comment.id)}
-                              >
-                                <MdDelete />
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </div>
                     ))}
                   </div>
+                  <div className="ANPpost-footer">
+                    <div className="ANPinteraction-bar">
+                      <button
+                        className={`ANPlike-btn ${post.likes?.[loggedInUserID] ? 'ANPliked' : ''}`}
+                        onClick={() => handleLike(post.id)}
+                        aria-label={`Like post (${Object.values(post.likes || {}).filter((liked) => liked).length} likes)`}
+                      >
+                        <BiSolidLike />{' '}
+                        {Object.values(post.likes || {}).filter((liked) => liked).length}
+                      </button>
+                      <span className="ANPcomment-count">
+                        <FaCommentAlt /> {post.comments?.length || 0}
+                      </span>
+                    </div>
+                    <div className="ANPcomment-section">
+                      <div className="ANPadd-comment">
+                        <input
+                          type="text"
+                          className="ANPcomment-input"
+                          placeholder="Add a comment..."
+                          value={newComment[post.id] || ''}
+                          onChange={(e) =>
+                            setNewComment({ ...newComment, [post.id]: e.target.value })
+                          }
+                          onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.id)}
+                          aria-label="Add a comment"
+                        />
+                        <button
+                          className="ANPsend-comment-btn"
+                          onClick={() => handleAddComment(post.id)}
+                          aria-label="Send comment"
+                        >
+                          <IoSend />
+                        </button>
+                      </div>
+                      {post.comments?.map((comment) => (
+                        <div key={comment.id} className="ANPcomment">
+                          <div className="ANPcomment-content">
+                            <span className="ANPcomment-username">{comment.userFullName}</span>
+                            {editingComment.id === comment.id ? (
+                              <input
+                                type="text"
+                                className="ANPedit-comment-input"
+                                value={editingComment.content}
+                                onChange={(e) =>
+                                  setEditingComment({ ...editingComment, content: e.target.value })
+                                }
+                                autoFocus
+                                aria-label="Edit comment"
+                              />
+                            ) : (
+                              <>
+                                <p className="ANPcomment-text">{comment.content}</p>
+                                <button
+                                  className="ANPcomment-reply-btn"
+                                  onClick={() =>
+                                    setNewComment({
+                                      ...newComment,
+                                      [post.id]: `@${comment.userFullName} `,
+                                    })
+                                  }
+                                  aria-label={`Reply to ${comment.userFullName}`}
+                                >
+                                  Reply
+                                </button>
+                              </>
+                            )}
+                          </div>
+                          {(comment.userID === loggedInUserID || post.userID === loggedInUserID) && (
+                            <div className="ANPcomment-actions">
+                              {comment.userID === loggedInUserID &&
+                                (editingComment.id === comment.id ? (
+                                  <>
+                                    <button
+                                      className="ANPcomment-action-btn ANPsave"
+                                      onClick={() =>
+                                        handleSaveComment(post.id, comment.id, editingComment.content)
+                                      }
+                                      aria-label="Save comment"
+                                    >
+                                      <FiSave />
+                                    </button>
+                                    <button
+                                      className="ANPcomment-action-btn ANPcancel"
+                                      onClick={() => setEditingComment({})}
+                                      aria-label="Cancel edit"
+                                    >
+                                      <TbPencilCancel />
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <button
+                                      className="ANPcomment-action-btn ANPedit"
+                                      onClick={() =>
+                                        setEditingComment({ id: comment.id, content: comment.content })
+                                      }
+                                      aria-label="Edit comment"
+                                    >
+                                      <GrUpdate />
+                                    </button>
+                                    <button
+                                      className="ANPcomment-action-btn ANPdelete"
+                                      onClick={() => handleDeleteComment(post.id, comment.id)}
+                                      aria-label="Delete comment"
+                                    >
+                                      <MdDelete />
+                                    </button>
+                                  </>
+                                ))}
+                              {post.userID === loggedInUserID && comment.userID !== loggedInUserID && (
+                                <button
+                                  className="ANPcomment-action-btn ANPdelete"
+                                  onClick={() => handleDeleteComment(post.id, comment.id)}
+                                  aria-label="Delete comment"
+                                >
+                                  <MdDelete />
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
-        </div>
+              ))
+            )}
+          </div>
+        </InfiniteScroll>
       </div>
+      <nav className="ANPbottom-nav">
+        <button onClick={() => navigate('/home')} aria-label="Home">
+          <IoHome />
+        </button>
+        <button onClick={() => navigate('/search')} aria-label="Search">
+          <FaSearch />
+        </button>
+        <button onClick={() => navigate('/addNewPost')} aria-label="Create Post">
+          <IoCreate />
+        </button>
+        <button onClick={() => navigate('/notifications')} aria-label="Notifications">
+          <FaBell />
+        </button>
+        <button onClick={() => navigate('/userProfile')} aria-label="Profile">
+          <FaUser />
+        </button>
+      </nav>
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
@@ -565,11 +657,16 @@ function AllPost() {
         className="ANPmedia-modal"
         overlayClassName="ANPmedia-modal-overlay"
       >
-        <button className="ANPclose-modal-btn" onClick={closeModal} title="Close">
+        <button
+          className="ANPclose-modal-btn"
+          onClick={closeModal}
+          title="Close"
+          aria-label="Close media modal"
+        >
           ×
         </button>
         {selectedMedia?.endsWith('.mp4') ? (
-          <video controls className="ANPmodal-media">
+          <video controls className="ANPmodal-media" loading="lazy">
             <source src={`http://localhost:8080${selectedMedia}`} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
@@ -578,6 +675,7 @@ function AllPost() {
             src={`http://localhost:8080${selectedMedia}`}
             alt="Full Media"
             className="ANPmodal-media"
+            loading="lazy"
           />
         )}
       </Modal>

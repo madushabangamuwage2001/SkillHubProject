@@ -2,7 +2,7 @@
   --primary: #4f46e5;
   --primary-dark: #4338ca;
   --primary-light: #818cf8;
-  -- عربستان: #7c3aed;
+  /* -- عربستان: #7c3aed; */
   --accent: #f59e0b;
   --success: #10b981;
   --error: #ef4444;
@@ -58,7 +58,9 @@ body {
   font-size: 2.5rem;
   font-weight: 800;
   color: var(--text);
-  margin-bottom: var(--space-4);
+  margin-top: 150px;
+  margin-bottom: 15px;
+
 }
 
 .MAPposts-controls {

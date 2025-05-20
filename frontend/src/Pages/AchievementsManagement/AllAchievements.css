@@ -1,32 +1,188 @@
+:root {
+  /* Colors */
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --secondary: #8b5cf6;
+  --accent: #f59e0b;
+  --success: #22c55e;
+  --error: #ef4444;
+  --background-light: #ffffff;
+  --background-dark: #121212;
+  --surface-light: #f8fafc;
+  --surface-dark: rgba(255, 255, 255, 0.05);
+  --text-light: #1f2937;
+  --text-dark: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --border: rgba(255, 255, 255, 0.1);
+  --dark-gradient: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  --primary-gradient: linear-gradient(135deg, #ff80bf, #9089fc);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+  /* Typography */
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.6s ease-out;
+
+  /* Layout */
+  --container-width: 1344px;
+}
+
+/* Global Reset & Base Styles */
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  background: var(--background-dark);
+  color: var(--text-dark);
+}
+
+[data-theme="light"] body {
+  background: var(--background-light);
+  color: var(--text-light);
+}
+
+/* Common Components */
+.ALAglass-card {
+  background: var(--surface-dark);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+[data-theme="light"] .ALAglass-card {
+  background: var(--surface-light);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.ALAglass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-md);
+}
+
+.ALAbutton-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.ALAbutton-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.ALAinput-field {
+  background: var(--surface-dark);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-dark);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+[data-theme="light"] .ALAinput-field {
+  background: var(--surface-light);
+  color: var(--text-light);
+}
+
+.ALAinput-field:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Animations */
+@keyframes ALAfadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ALAfadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .ALAachievements-container {
   min-height: 100vh;
   background: var(--dark-gradient);
   font-family: var(--font-main);
+  color: var(--text-dark);
   position: relative;
   overflow: hidden;
+}
+
+[data-theme="light"] .ALAachievements-container {
+  background: var(--background-light);
 }
 
 .ALAachievements-container::before {
   content: '';
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15), transparent 70%);
   pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="light"] .ALAachievements-container::before {
+  background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.1), transparent 70%);
 }
 
 .ALAachievements-content {
   max-width: var(--container-width);
-  margin: 0 auto;
-  padding: var(--space-16);
+  margin: 100px auto;
+  padding: var(--space-16) var(--space-3);
   position: relative;
   z-index: 1;
+
 }
 
 .ALAachievements-header {
   text-align: center;
   margin-bottom: var(--space-12);
-  animation: fadeInUp var(--transition-normal);
+  animation: ALAfadeInUp var(--transition-slow);
 }
 
 .ALAachievements-title {
@@ -38,240 +194,377 @@
   margin-bottom: var(--space-6);
 }
 
-.ALA ಍search-container {
+
+
+.ALAsearch-container {
   max-width: 600px;
   margin: 0 auto var(--space-12);
-  background: var(--glass-bg);
+  background: var(--surface-dark);
   backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: var(--space-4);
+  padding: var(--space-3);
+}
+
+[data-theme="light"] .ALAsearch-container {
+  background: var(--surface-light);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .ALAsearch-input {
   width: 100%;
-  padding: 1rem 1.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.75rem;
-  color: #fff;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-dark);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  color: var(--text-dark);
+  transition: all var(--transition-fast);
+}
+
+[data-theme="light"] .ALAsearch-input {
+  background: var(--surface-light);
+  color: var(--text-light);
 }
 
 .ALAsearch-input:focus {
   outline: none;
-  border-color: #9089fc;
-  box-shadow: 0 0 0 2px rgba(144, 137, 252, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .ALAsearch-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-secondary);
 }
 
 .ALAadd-button {
   position: fixed;
-  bottom: 2.5rem;
-  right: 2.5rem;
-  width: 4rem;
-  height: 4rem;
-  background: linear-gradient(135deg, #ff80bf, #9089fc);
+  bottom: var(--space-4);
+  right: var(--space-4);
+  width: 3rem;
+  height: 3rem;
+  background: var(--primary);
   border: none;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   color: white;
-  font-size: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-lg);
   z-index: 1000;
 }
 
 .ALAadd-button:hover {
-  transform: translateY(-4px) rotate(90deg);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  background: var(--primary-dark);
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: var(--shadow-md);
 }
 
 .ALAachievements-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 2rem;
-  padding: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-6);
+  padding: var(--space-8) var(--space-1);
 }
 
 .ALAachievement-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-dark);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1.5rem;
-  padding: 2rem;
-  transition: all 0.4s ease;
-  animation: fadeInUp 0.6s ease-out;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  transition: all var(--transition-normal);
+  animation: ALAfadeInUp var(--transition-slow);
   overflow: hidden;
+}
+
+[data-theme="light"] .ALAachievement-card {
+  background: var(--surface-light);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .ALAachievement-card:hover {
   transform: translateY(-8px);
   background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
 .ALAcard-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-3);
 }
 
 .ALAuser-info {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .ALAuser-name {
-  font-size: 1rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
-  color: #1f2937;
-  margin: 0;
+  color: var(--text-dark);
+}
+
+[data-theme="light"] .ALAuser-name {
+  color: var(--text-light);
 }
 
 .ALAachievement-date {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
 }
 
 .ALAaction-buttons {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-2);
 }
 
 .ALAaction-icon {
-  font-size: 1.25rem;
-  color: #6b7280;
+  font-size: var(--font-size-md);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all var(--transition-fast);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ALAedit-icon {
+  color: var(--primary);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.ALAdelete-icon {
+  color: var(--error);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .ALAedit-icon:hover {
-  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.2);
+  transform: scale(1.1);
 }
 
 .ALAdelete-icon:hover {
-  color: #ef4444;
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(1.1);
 }
 
 .ALAcard-content {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-2);
 }
 
 .ALAachievement-title {
-  font-size: 1.25rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
-  color: #1f2937;
-  margin: 0;
+  color: var(--text-dark);
+}
+
+[data-theme="light"] .ALAachievement-title {
+  color: var(--text-light);
 }
 
 .ALAachievement-description {
-  font-size: 0.875rem;
-  color: #4b5563;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
   line-height: 1.5;
-  margin: 0;
 }
 
 .ALAachievement-image {
   width: 100%;
   max-height: 16rem;
   object-fit: cover;
-  border-radius: 0.5rem;
-  margin-top: 0.75rem;
+  border-radius: var(--radius-md);
+  margin-top: var(--space-2);
+  border: 1px solid var(--border);
+  loading: lazy;
+}
+
+[data-theme="light"] .ALAachievement-image {
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .ALAno-achievements {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 3rem;
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: var(--space-8);
+  background: var(--surface-dark);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  animation: ALAfadeIn var(--transition-slow);
+}
+
+[data-theme="light"] .ALAno-achievements {
+  background: var(--surface-light);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .ALAno-achievements-icon {
-  width: 4rem;
-  height: 4rem;
-  margin: 0 auto;
-  background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="%236b7280"%3E%3Cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /%3E%3C/svg%3E') no-repeat center;
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto var(--space-3);
+  background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="%2394a3b8"%3E%3Cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /%3E%3C/svg%3E') no-repeat center;
+  background-size: contain;
 }
 
 .ALAno-achievements-message {
-  margin: 1.5rem 0;
-  font-size: 1.125rem;
-  color: #4b5563;
+  margin: var(--space-3) 0;
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
 }
 
 .ALAcreate-button {
-  padding: 0.75rem 1.5rem;
-  background-color: #3b82f6;
+  padding: var(--space-2) var(--space-4);
+  background: var(--primary);
   color: white;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all var(--transition-fast);
 }
 
 .ALAcreate-button:hover {
-  background-color: #2563eb;
+  background: var(--primary-dark);
+  transform: translateY(-2px);
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.ALAstories-bar {
+  display: flex;
+  overflow-x: auto;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-3);
+  scrollbar-width: none;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+.ALAstories-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.ALAstory-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.ALAstory-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--primary);
+  object-fit: cover;
+}
+
+.ALAstory-username {
+  font-size: var(--font-size-xs);
+  color: var(--text-dark);
+  margin-top: var(--space-1);
+}
+
+[data-theme="light"] .ALAstory-username {
+  color: var(--text-light);
+}
+
+.ALAbottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface-dark);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: var(--space-2) 0;
+  z-index: 1000;
+}
+
+[data-theme="light"] .ALAbottom-nav {
+  background: var(--surface-light);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.ALAbottom-nav button {
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+[data-theme="light"] .ALAbottom-nav button {
+  color: var(--text-light);
+}
+
+.ALAbottom-nav button:hover {
+  color: var(--primary);
+}
+
+.skeleton {
+  background: var(--surface-dark);
+  border-radius: var(--radius-sm);
+}
+
+[data-theme="light"] .skeleton {
+  background: var(--surface-light);
+}
+
+@media (max-width: 768px) {
+  .ALAachievements-content {
+    padding: var(--space-8) var(--space-2);
   }
-  to {
-    opacity: 1;
+
+  .ALAachievements-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .ALAachievements-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
   .ALAachievements-content {
-    padding: 2rem 0.5rem;
+    padding: var(--space-6) var(--space-1);
   }
 
-  .ALAachievements-grid {
-    grid-template-columns: 1fr;
-    padding: 0 0.5rem;
+  .ALAachievements-title {
+    font-size: var(--font-size-xl);
   }
 
-  .ALAachievement-card {
-    padding: 1rem;
+  .ALAno-achievements {
+    padding: var(--space-6);
+  }
+
+  .ALAno-achievements-icon {
+    width: 2.5rem;
+    height: 2.5rem;
   }
 
   .ALAadd-button {
-    bottom: 1.5rem;
-    right: 1.5rem;
-    width: 3rem;
-    height: 3rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: var(--font-size-md);
   }
+}
 
-  .ALAadd-button-icon {
-    font-size: 1.5rem;
+@media (min-width: 768px) {
+  .ALAbottom-nav {
+    display: none;
   }
 }
