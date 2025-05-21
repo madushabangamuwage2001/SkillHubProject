@@ -11,21 +11,43 @@ const CommentSection = ({ post, loggedInUserID, updatePostComments }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const validateComment = (content) => {
+    const trimmed = content.trim();
+
+    if (!trimmed) return 'Comment cannot be empty.';
+    if (trimmed.length > 500) return 'Comment cannot exceed 500 characters.';
+
+    const htmlTagPattern = /<\/?[a-z][\s\S]*>/i;
+    if (htmlTagPattern.test(trimmed)) return 'HTML tags are not allowed.';
+
+    const repeatPattern = /(.)\1{4,}/;
+    if (repeatPattern.test(trimmed)) return 'Avoid repeating characters too much.';
+
+
+    const bannedWords = ['badword1', 'badword2', 'badword3'];
+    if (bannedWords.some(word => trimmed.toLowerCase().includes(word))) {
+      return 'Inappropriate content is not allowed.';
+    }
+
+    const onlyMention = /^@\w+\s*$/;
+    if (onlyMention.test(trimmed)) return 'You must add a message with your reply.';
+
+    return null;
+  };
+
   const handleAddComment = async () => {
     if (!loggedInUserID) {
       alert('Please log in to comment.');
       return;
     }
-    const content = newComment.trim();
-    if (!content) {
-      setError('Comment cannot be empty.');
-      return;
-    }
-    if (content.length > 500) {
-      setError('Comment cannot exceed 500 characters.');
+
+    const validationError = validateComment(newComment);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
+    const content = newComment.trim();
     setIsLoading(true);
     setError(null);
     try {
@@ -38,6 +60,33 @@ const CommentSection = ({ post, loggedInUserID, updatePostComments }) => {
     } catch (error) {
       console.error('Error adding comment:', error);
       setError('Failed to add comment. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveComment = async (commentId, content) => {
+    const validationError = validateComment(content);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    try {
+      await axios.put(`http://localhost:8080/posts/${post.id}/comment/${commentId}`, {
+        userID: loggedInUserID,
+        content,
+      });
+      updatePostComments(
+        post.id,
+        post.comments.map((c) => (c.id === commentId ? { ...c, content } : c))
+      );
+      setEditingComment({});
+    } catch (error) {
+      console.error('Error saving comment:', error);
+      setError('Failed to save comment. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -63,36 +112,23 @@ const CommentSection = ({ post, loggedInUserID, updatePostComments }) => {
     }
   };
 
-
-  const handleSaveComment = async (commentId, content) => {
-    if (!content.trim()) {
-      setError('Comment cannot be empty.');
-      return;
-    }
-    setIsLoading(true);
-    setError(null);
-    try {
-      await axios.put(`http://localhost:8080/posts/${post.id}/comment/${commentId}`, {
-        userID: loggedInUserID,
-        content,
-      });
-      updatePostComments(
-        post.id,
-        post.comments.map((c) => (c.id === commentId ? { ...c, content } : c))
-      );
-      setEditingComment({});
-    } catch (error) {
-      console.error('Error saving comment:', error);
-      setError('Failed to save comment. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const handleReply = (username) => {
+  //   setNewComment(`@${username} `);
+  //   document.querySelector('.ANPcomment-input').focus();
+  // };
 
   const handleReply = (username) => {
-    setNewComment(`@${username} `);
-    document.querySelector('.ANPcomment-input').focus();
-  };
+  const content = newComment;
+  const validationError = validateComment(content);
+  if (validationError) {
+    setError(validationError);
+    return;
+  }
+
+  setNewComment(`@${username} `);
+  document.querySelector('.ANPcomment-input')?.focus(); 
+};
+
 
   return (
     <div className="ANPcomment-section">
