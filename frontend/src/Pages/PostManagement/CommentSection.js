@@ -1,38 +1,120 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { IoSend } from 'react-icons/io5';
 import { FiSave, FiEdit, FiX } from 'react-icons/fi';
 import { MdDelete } from 'react-icons/md';
 import './Comment.css';
 
-const CommentSection = ({
-  post,
-  loggedInUserID,
-  newComment,
-  setNewComment,
-  editingComment,
-  setEditingComment,
-  handleAddComment,
-  handleDeleteComment,
-  handleSaveComment,
-}) => {
+const CommentSection = ({ post, loggedInUserID, updatePostComments }) => {
+  const [newComment, setNewComment] = useState('');
+  const [editingComment, setEditingComment] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleAddComment = async () => {
+    if (!loggedInUserID) {
+      alert('Please log in to comment.');
+      return;
+    }
+    const content = newComment.trim();
+    if (!content) {
+      setError('Comment cannot be empty.');
+      return;
+    }
+    if (content.length > 500) {
+      setError('Comment cannot exceed 500 characters.');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await axios.post(`http://localhost:8080/posts/${post.id}/comment`, {
+        userID: loggedInUserID,
+        content,
+      });
+      updatePostComments(post.id, response.data.comments);
+      setNewComment('');
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      setError('Failed to add comment. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Are you sure you want to delete this comment?')) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      await axios.delete(`http://localhost:8080/posts/${post.id}/comment/${commentId}`, {
+        params: { userID: loggedInUserID },
+      });
+      updatePostComments(
+        post.id,
+        post.comments.filter((c) => c.id !== commentId)
+      );
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      setError('Failed to delete comment. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  const handleSaveComment = async (commentId, content) => {
+    if (!content.trim()) {
+      setError('Comment cannot be empty.');
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    try {
+      await axios.put(`http://localhost:8080/posts/${post.id}/comment/${commentId}`, {
+        userID: loggedInUserID,
+        content,
+      });
+      updatePostComments(
+        post.id,
+        post.comments.map((c) => (c.id === commentId ? { ...c, content } : c))
+      );
+      setEditingComment({});
+    } catch (error) {
+      console.error('Error saving comment:', error);
+      setError('Failed to save comment. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleReply = (username) => {
+    setNewComment(`@${username} `);
+    document.querySelector('.ANPcomment-input').focus();
+  };
+
   return (
     <div className="ANPcomment-section">
+      {error && <div className="ANPerror-message">{error}</div>}
       <div className="ANPadd-comment">
         <input
           type="text"
           className="ANPcomment-input"
           placeholder="Add a comment..."
-          value={newComment[post.id] || ''}
-          onChange={(e) => setNewComment({ ...newComment, [post.id]: e.target.value })}
-          onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.id)}
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
           aria-label="Add a comment"
+          disabled={isLoading}
         />
         <button
           className="ANPsend-comment-btn"
-          onClick={() => handleAddComment(post.id)}
+          onClick={handleAddComment}
+          disabled={isLoading}
           aria-label="Send comment"
         >
-          <IoSend />
+          {isLoading ? '...' : <IoSend />}
         </button>
       </div>
       {post.comments?.map((comment) => (
@@ -50,13 +132,13 @@ const CommentSection = ({
                   }
                   autoFocus
                   aria-label="Edit comment"
+                  disabled={isLoading}
                 />
                 <div className="ANPedit-comment-actions">
                   <button
                     className="ANPcomment-action-btn ANPsave"
-                    onClick={() =>
-                      handleSaveComment(post.id, comment.id, editingComment.content)
-                    }
+                    onClick={() => handleSaveComment(comment.id, editingComment.content)}
+                    disabled={isLoading}
                     aria-label="Save comment"
                   >
                     <FiSave />
@@ -64,6 +146,7 @@ const CommentSection = ({
                   <button
                     className="ANPcomment-action-btn ANPcancel"
                     onClick={() => setEditingComment({})}
+                    disabled={isLoading}
                     aria-label="Cancel edit"
                   >
                     <FiX />
@@ -75,12 +158,7 @@ const CommentSection = ({
                 <p className="ANPcomment-text">{comment.content}</p>
                 <button
                   className="ANPcomment-reply-btn"
-                  onClick={() =>
-                    setNewComment({
-                      ...newComment,
-                      [post.id]: `@${comment.userFullName} `,
-                    })
-                  }
+                  onClick={() => handleReply(comment.userFullName)}
                   aria-label={`Reply to ${comment.userFullName}`}
                 >
                   Reply
@@ -94,13 +172,15 @@ const CommentSection = ({
                           onClick={() =>
                             setEditingComment({ id: comment.id, content: comment.content })
                           }
+                          disabled={isLoading}
                           aria-label="Edit comment"
                         >
                           <FiEdit />
                         </button>
                         <button
                           className="ANPcomment-action-btn ANPdelete"
-                          onClick={() => handleDeleteComment(post.id, comment.id)}
+                          onClick={() => handleDeleteComment(comment.id)}
+                          disabled={isLoading}
                           aria-label="Delete comment"
                         >
                           <MdDelete />
@@ -110,7 +190,8 @@ const CommentSection = ({
                     {post.userID === loggedInUserID && comment.userID !== loggedInUserID && (
                       <button
                         className="ANPcomment-action-btn ANPdelete"
-                        onClick={() => handleDeleteComment(post.id, comment.id)}
+                        onClick={() => handleDeleteComment(comment.id)}
+                        disabled={isLoading}
                         aria-label="Delete comment"
                       >
                         <MdDelete />

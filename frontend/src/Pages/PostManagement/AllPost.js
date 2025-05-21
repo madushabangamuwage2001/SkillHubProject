@@ -17,7 +17,9 @@ import NavBar from '../../Components/NavBar/NavBar';
 import Pro from '../../Components/NavBar/img/img.png';
 import { fetchUserDetails } from '../../Pages/UserManagement/UserProfile';
 import './AllPost.css';
+
 import CommentSection from './CommentSection.js';
+import PostInteractions from './PostInteractions.js';
 
 Modal.setAppElement('#root');
 
@@ -29,8 +31,6 @@ function AllPost() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [followedUsers, setFollowedUsers] = useState([]);
-  const [newComment, setNewComment] = useState({});
-  const [editingComment, setEditingComment] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [userProfileImage, setUserProfileImage] = useState(null);
   const [googleProfileImage, setGoogleProfileImage] = useState(null);
@@ -145,27 +145,7 @@ function AllPost() {
     });
   };
 
-  const handleLike = async (postId) => {
-    if (!loggedInUserID) {
-      alert('Please log in to like a post.');
-      return;
-    }
-    try {
-      const response = await axios.put(`http://localhost:8080/posts/${postId}/like`, null, {
-        params: { userID: loggedInUserID },
-      });
-      const updatedLikes = response.data.likes;
-      setPosts((prev) =>
-        prev.map((post) => (post.id === postId ? { ...post, likes: updatedLikes } : post))
-      );
-      setFilteredPosts((prev) =>
-        prev.map((post) => (post.id === postId ? { ...post, likes: updatedLikes } : post))
-      );
-    } catch (error) {
-      console.error('Error liking post:', error);
-      alert('Failed to like post.');
-    }
-  };
+
 
   const handleFollowToggle = async (postOwnerID) => {
     if (!loggedInUserID) {
@@ -187,105 +167,6 @@ function AllPost() {
     } catch (error) {
       console.error('Error toggling follow:', error);
       alert('Failed to update follow status.');
-    }
-  };
-
-  const handleAddComment = async (postId) => {
-    if (!loggedInUserID) {
-      alert('Please log in to comment.');
-      return;
-    }
-    const content = (newComment[postId] || '').trim();
-    if (!content) {
-      alert('Comment cannot be empty.');
-      return;
-    }
-    try {
-      const response = await axios.post(`http://localhost:8080/posts/${postId}/comment`, {
-        userID: loggedInUserID,
-        content,
-      });
-      setPosts((prev) =>
-        prev.map((post) =>
-          post.id === postId ? { ...post, comments: response.data.comments } : post
-        )
-      );
-      setFilteredPosts((prev) =>
-        prev.map((post) =>
-          post.id === postId ? { ...post, comments: response.data.comments } : post
-        )
-      );
-      setNewComment((prev) => ({ ...prev, [postId]: '' }));
-    } catch (error) {
-      console.error('Error adding comment:', error);
-      alert('Failed to add comment.');
-    }
-  };
-
-  const handleDeleteComment = async (postId, commentId) => {
-    if (!window.confirm('Are you sure you want to delete this comment?')) return;
-    try {
-      await axios.delete(`http://localhost:8080/posts/${postId}/comment/${commentId}`, {
-        params: { userID: loggedInUserID },
-      });
-      setPosts((prev) =>
-        prev.map((post) =>
-          post.id === postId
-            ? { ...post, comments: post.comments.filter((c) => c.id !== commentId) }
-            : post
-        )
-      );
-      setFilteredPosts((prev) =>
-        prev.map((post) =>
-          post.id === postId
-            ? { ...post, comments: post.comments.filter((c) => c.id !== commentId) }
-            : post
-        )
-      );
-    } catch (error) {
-      console.error('Error deleting comment:', error);
-      alert('Failed to delete comment.');
-    }
-  };
-
-  const handleSaveComment = async (postId, commentId, content) => {
-    if (!content.trim()) {
-      alert('Comment cannot be empty.');
-      return;
-    }
-    try {
-      await axios.put(`http://localhost:8080/posts/${postId}/comment/${commentId}`, {
-        userID: loggedInUserID,
-        content,
-      });
-      setPosts((prev) =>
-        prev.map((post) =>
-          post.id === postId
-            ? {
-                ...post,
-                comments: post.comments.map((c) =>
-                  c.id === commentId ? { ...c, content } : c
-                ),
-              }
-            : post
-        )
-      );
-      setFilteredPosts((prev) =>
-        prev.map((post) =>
-          post.id === postId
-            ? {
-                ...post,
-                comments: post.comments.map((c) =>
-                  c.id === commentId ? { ...c, content } : c
-                ),
-              }
-            : post
-        )
-      );
-      setEditingComment({});
-    } catch (error) {
-      console.error('Error saving comment:', error);
-      alert('Failed to save comment.');
     }
   };
 
@@ -325,6 +206,18 @@ function AllPost() {
       </div>
     );
   }
+
+const updatePostComments = (postId, updatedComments) => {
+  setPosts((prev) =>
+    prev.map((post) => (post.id === postId ? { ...post, comments: updatedComments } : post))
+  );
+  setFilteredPosts((prev) =>
+    prev.map((post) => (post.id === postId ? { ...post, comments: updatedComments } : post))
+  );
+};
+
+
+
 
   return (
     <div className="ANPall-posts-container" data-theme={theme}>
@@ -473,6 +366,7 @@ function AllPost() {
                       {post.description}
                     </p>
                     <p className="ANPpost-category">Category: {post.category || 'Uncategorized'}</p>
+
                   </div>
                   <div className="ANPmedia-grid">
                     {post.media.slice(0, 4).map((mediaUrl, index) => (
@@ -501,150 +395,24 @@ function AllPost() {
                           <div className="ANPoverlay-text">+{post.media.length - 4}</div>
                         )}
                       </div>
-                    ))}
+                    ))}    
                   </div>
-                  
-                  {/* <div className="ANPpost-footer">
-                    <div className="ANPinteraction-bar">
-                       <button
-                        className={`ANPlike-btn ${post.likes?.[loggedInUserID] ? 'ANPliked' : ''}`}
-                        onClick={() => handleLike(post.id)}
-                        aria-label={`Like post (${Object.values(post.likes || {}).filter((liked) => liked).length} likes)`}
-                      >
-                        <BiSolidLike />{' '}
-                        {Object.values(post.likes || {}).filter((liked) => liked).length}
-                      </button>
-                      
-                      <span className="ANPcomment-count">
-                        <FaCommentAlt /> {post.comments?.length || 0}
-                      </span>
-                    </div>
-                    <div className="ANPcomment-section">
-                      <div className="ANPadd-comment">
-                        <input
-                          type="text"
-                          className="ANPcomment-input"
-                          placeholder="Add a comment..."
-                          value={newComment[post.id] || ''}
-                          onChange={(e) =>
-                            setNewComment({ ...newComment, [post.id]: e.target.value })
-                          }
-                          onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.id)}
-                          aria-label="Add a comment"
-                        />
-                        <button
-                          className="ANPsend-comment-btn"
-                          onClick={() => handleAddComment(post.id)}
-                          aria-label="Send comment"
-                        >
-                          <IoSend />
-                        </button>
-                      </div>
-                      {post.comments?.map((comment) => (
-                        <div key={comment.id} className="ANPcomment">
-                          <div className="ANPcomment-content">
-                            <span className="ANPcomment-username">{comment.userFullName}</span>
-                            {editingComment.id === comment.id ? (
-                              <input
-                                type="text"
-                                className="ANPedit-comment-input"
-                                value={editingComment.content}
-                                onChange={(e) =>
-                                  setEditingComment({ ...editingComment, content: e.target.value })
-                                }
-                                autoFocus
-                                aria-label="Edit comment"
-                              />
-                            ) : (
-                              <>
-                                <p className="ANPcomment-text">{comment.content}</p>
-                                <button
-                                  className="ANPcomment-reply-btn"
-                                  onClick={() =>
-                                    setNewComment({
-                                      ...newComment,
-                                      [post.id]: `@${comment.userFullName} `,
-                                    })
-                                  }
-                                  aria-label={`Reply to ${comment.userFullName}`}
-                                >
-                                  Reply
-                                </button>
-                              </>
-                            )}
-                          </div>
-                          {(comment.userID === loggedInUserID || post.userID === loggedInUserID) && (
-                            <div className="ANPcomment-actions">
-                              {comment.userID === loggedInUserID &&
-                                (editingComment.id === comment.id ? (
-                                  <>
-                                    <button
-                                      className="ANPcomment-action-btn ANPsave"
-                                      onClick={() =>
-                                        handleSaveComment(post.id, comment.id, editingComment.content)
-                                      }
-                                      aria-label="Save comment"
-                                    >
-                                      <FiSave />
-                                    </button>
-                                    <button
-                                      className="ANPcomment-action-btn ANPcancel"
-                                      onClick={() => setEditingComment({})}
-                                      aria-label="Cancel edit"
-                                    >
-                                      <TbPencilCancel />
-                                    </button>
-                                  </>
-                                ) : (
-                                  <>
-                                    <button
-                                      className="ANPcomment-action-btn ANPedit"
-                                      onClick={() =>
-                                        setEditingComment({ id: comment.id, content: comment.content })
-                                      }
-                                      aria-label="Edit comment"
-                                    >
-                                      <GrUpdate />
-                                    </button>
-                                    <button
-                                      className="ANPcomment-action-btn ANPdelete"
-                                      onClick={() => handleDeleteComment(post.id, comment.id)}
-                                      aria-label="Delete comment"
-                                    >
-                                      <MdDelete />
-                                    </button>
-                                  </>
-                                ))}
-                              {post.userID === loggedInUserID && comment.userID !== loggedInUserID && (
-                                <button
-                                  className="ANPcomment-action-btn ANPdelete"
-                                  onClick={() => handleDeleteComment(post.id, comment.id)}
-                                  aria-label="Delete comment"
-                                >
-                                  <MdDelete />
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div> */}
+
+<PostInteractions
+    post={post}
+    loggedInUserID={loggedInUserID}
+    setPosts={setPosts}
+    setFilteredPosts={setFilteredPosts}
+  />
 
 <CommentSection
-                    post={post}
-                    loggedInUserID={loggedInUserID}
-                    newComment={newComment}
-                    setNewComment={setNewComment}
-                    editingComment={editingComment}
-                    setEditingComment={setEditingComment}
-                    handleAddComment={handleAddComment}
-                    handleDeleteComment={handleDeleteComment}
-                    handleSaveComment={handleSaveComment}
-                  />
+  post={post}
+  loggedInUserID={loggedInUserID}
+  updatePostComments={updatePostComments}
+/>
 
 
-
+                  
                 </div>
               ))
             )}

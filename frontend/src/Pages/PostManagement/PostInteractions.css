@@ -1,0 +1,81 @@
+/* Container for post interactions */
+.ANPpost-interactions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.5rem 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Like button styling */
+.ANPlike-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #606770;
+  cursor: pointer;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.ANPlike-btn:hover {
+  background-color: #f0f2f5;
+  color: #1877f2;
+}
+
+.ANPlike-btn svg {
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+/* Liked state for the like button */
+.ANPliked {
+  color: #1877f2;
+  font-weight: 600;
+}
+
+.ANPliked svg {
+  fill: #1877f2;
+  transform: scale(1.1);
+}
+
+/* Comment count styling */
+.ANPcomment-count {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: #606770;
+  cursor: default;
+}
+
+.ANPcomment-count svg {
+  font-size: 1rem;
+  color: #606770;
+  transition: color 0.2s ease;
+}
+
+.ANPcomment-count:hover svg {
+  color: #1877f2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .ANPpost-interactions {
+    gap: 1rem;
+  }
+
+  .ANPlike-btn,
+  .ANPcomment-count {
+    font-size: 0.85rem;
+  }
+
+  .ANPlike-btn svg,
+  .ANPcomment-count svg {
+    font-size: 1rem;
+  }
+}
